@@ -1,0 +1,11 @@
+spring:
+  data:
+    mongodb:
+      uri: mongodb://localhost:27017/teeup-db
+
+server:
+  port: 8080
+
+# JWT 비밀 키 상용화할때 수정 보안에 매우 매우 중요!!
+jwt:
+  secretKey: buaabuaa
