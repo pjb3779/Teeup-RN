@@ -1,11 +1,13 @@
 import React, { useState } from 'react';
 import { View, Text, TextInput, StyleSheet, TouchableOpacity, Alert } from 'react-native';
-import { signup } from '../../services/authService'; // 회원가입 API 함수
+import { MaterialIcons } from '@expo/vector-icons'; // 아이콘 라이브러리
+import { signup } from '../../services/authService'; // 회원가입 API 호출 함수
 
 export default function SignUpScreen({ navigation }) {
   const [userid, setUserid] = useState('');
   const [password, setPassword] = useState('');
   const [nickname, setNickname] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
 
   const handleSignup = async () => {
     if (!userid || !password || !nickname) {
@@ -14,48 +16,85 @@ export default function SignUpScreen({ navigation }) {
     }
 
     try {
-      await signup({ userid, password, nickname });  // API 요청
-      console.log('회원가입 시도 중');
+      await signup({ userid, password, nickname });
       Alert.alert('회원가입 성공', '로그인 화면으로 이동합니다.');
       navigation.navigate('Login');
     } catch (error) {
-      console.log('회원가입 시도 실패');
-      Alert.alert('회원가입 실패', error.response?.data || '오류 발생');
-      console.error(error);
+      console.error('회원가입 실패', error);
+      Alert.alert('회원가입 실패', error.response?.data || '오류가 발생했습니다.');
     }
   };
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>회원가입</Text>
+      <Text style={styles.title}>Sign Up</Text>
 
-      <TextInput
-        style={styles.input}
-        placeholder="아이디 (UserID)"
-        value={userid}
-        onChangeText={setUserid}
-      />
-      <TextInput
-        style={styles.input}
-        placeholder="비밀번호"
-        secureTextEntry
-        value={password}
-        onChangeText={setPassword}
-      />
-      <TextInput
-        style={styles.input}
-        placeholder="닉네임"
-        value={nickname}
-        onChangeText={setNickname}
-      />
+      {/* UserID 입력 */}
+      <View style={styles.inputGroup}>
+        <Text style={styles.label}>UserID</Text>
+        <View style={styles.inputWrapper}>
+          <MaterialIcons name="email" size={20} color="#aaa" />
+          <TextInput
+            style={styles.input}
+            placeholder="Enter UserID"
+            placeholderTextColor="#aaa"
+            value={userid}
+            onChangeText={setUserid}
+          />
+        </View>
+      </View>
 
-      <TouchableOpacity style={styles.button} onPress={handleSignup}>
-        <Text style={styles.buttonText}>회원가입</Text>
+      {/* Password 입력 */}
+      <View style={styles.inputGroup}>
+        <Text style={styles.label}>Password</Text>
+        <View style={styles.inputWrapper}>
+          <MaterialIcons name="lock" size={20} color="#aaa" />
+          <TextInput
+            style={styles.input}
+            placeholder="Enter password"
+            placeholderTextColor="#aaa"
+            secureTextEntry={!showPassword}
+            value={password}
+            onChangeText={setPassword}
+          />
+          <TouchableOpacity onPress={() => setShowPassword(!showPassword)}>
+            <MaterialIcons
+              name={showPassword ? 'visibility' : 'visibility-off'}
+              size={20}
+              color="#aaa"
+            />
+          </TouchableOpacity>
+        </View>
+      </View>
+
+      {/* Nickname 입력 */}
+      <View style={styles.inputGroup}>
+        <Text style={styles.label}>Nickname</Text>
+        <View style={styles.inputWrapper}>
+          <MaterialIcons name="person" size={20} color="#aaa" />
+          <TextInput
+            style={styles.input}
+            placeholder="Enter nickname"
+            placeholderTextColor="#aaa"
+            value={nickname}
+            onChangeText={setNickname}
+          />
+        </View>
+      </View>
+
+      {/* 회원가입 버튼 */}
+      <TouchableOpacity style={styles.authButton} onPress={handleSignup}>
+        <Text style={styles.authButtonText}>Sign Up</Text>
       </TouchableOpacity>
 
-      <TouchableOpacity onPress={() => navigation.goBack()}>
-        <Text style={styles.goBackText}>← 로그인으로 돌아가기</Text>
-      </TouchableOpacity>
+      {/* 로그인 화면으로 이동 */}
+      <View style={styles.promptWrapper}>
+        <Text style={styles.promptText}>Already have an account? </Text>
+        <TouchableOpacity onPress={() => navigation.navigate('Login')}>
+          <Text style={styles.promptLink}>Sign In</Text>
+        </TouchableOpacity>
+      </View>
+
     </View>
   );
 }
@@ -63,39 +102,69 @@ export default function SignUpScreen({ navigation }) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    padding: 30,
-    backgroundColor: '#fff',
     justifyContent: 'center',
+    alignItems: 'center',
+    padding: 20,
+    backgroundColor: 'white',
   },
   title: {
-    fontSize: 24,
-    marginBottom: 24,
-    textAlign: 'center',
+    fontSize: 30,
+    marginBottom: 20,
     color: '#004225FF',
     fontWeight: 'bold',
   },
-  input: {
-    height: 50,
-    borderColor: '#ccc',
-    borderWidth: 1,
-    marginBottom: 16,
-    borderRadius: 6,
-    paddingHorizontal: 12,
+  inputGroup: {
+    width: '100%',
+    marginBottom: 15,
   },
-  button: {
-    backgroundColor: '#004225FF',
-    padding: 14,
-    borderRadius: 6,
+  label: {
+    fontSize: 13,
+    color: '#444',
+    marginBottom: 6,
+    marginLeft: 4,
+    fontWeight: 'bold',
+  },
+  inputWrapper: {
+    flexDirection: 'row',
     alignItems: 'center',
-    marginBottom: 16,
+    backgroundColor: '#F3F4F6',
+    paddingHorizontal: 10,
+    borderRadius: 5,
+    width: '100%',
   },
-  buttonText: {
-    color: '#fff',
-    fontSize: 16,
+  input: {
+    flex: 1,
+    height: 48,
+    paddingLeft: 10,
   },
-  goBackText: {
-    textAlign: 'center',
-    color: '#004225FF',
+  authButton: {
+    width: 350,
+    height: 52,
+    borderRadius: 6,
+    backgroundColor: '#004225FF',
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginTop: 12,
+  },
+  authButtonText: {
+    fontSize: 18,
+    fontWeight: '400',
+    color: '#FFFFFF',
+    lineHeight: 28,
+  },
+  promptWrapper: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginTop: 30,
+  },
+  promptText: {
     fontSize: 14,
+    color: '#6B7280',
+  },
+  promptLink: {
+    fontSize: 14,
+    color: '#004225FF',
+    fontWeight: '600',
   },
 });

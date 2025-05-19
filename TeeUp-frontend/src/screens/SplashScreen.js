@@ -75,6 +75,7 @@ const styles = StyleSheet.create({
     color: '#6E7787',
     textAlign: 'center',
     marginTop: 16,
+    marginBottom: 200,
   },
 
   inputContainer: {

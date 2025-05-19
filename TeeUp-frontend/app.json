@@ -24,12 +24,6 @@
     },
     "web": {
       "favicon": "./assets/favicon.png"
-    },
-    "extra": {
-      "eas": {
-        "projectId": "615888cf-d746-42f7-bc55-8239dca199b3"
-      }
-    },
-    "owner": "beomi_01"
+    }
   }
 }
