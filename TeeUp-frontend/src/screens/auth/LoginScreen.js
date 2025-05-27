@@ -3,12 +3,14 @@ import { View, Text, StyleSheet, TouchableOpacity, TextInput, Alert } from 'reac
 import { MaterialIcons } from '@expo/vector-icons'; // 아이콘 라이브러리
 import { login } from '../../services/authService'; // 로그인 API 호출 함수
 import Main from '../main/HomeScreen'; // 로그인 후 메인 화면
+import useUserStore from '../../store/userStore';
 
 export default function LoginScreen({ navigation, onLogin }) {
   const [userid, setUserid] = useState('');  // email을 userid로 변경
   const [password, setPassword] = useState('');  // 비밀번호 상태
   const [showPassword, setShowPassword] = useState(false);  // 비밀번호 보이기 여부 상태
-
+  const setUser = useUserStore((state) => state.setUser);
+  
   // 로그인 함수
   const handleLogin = async () => {
     console.log('로그인 시도중');
@@ -18,12 +20,12 @@ export default function LoginScreen({ navigation, onLogin }) {
     }
 
     try {
-      const token = await login(userid, password);  // 서버와 로그인 요청
+      const { token, user } = await login(userid, password);;  // 서버와 로그인 요청
       console.log('로그인 성공, 토큰:', token);  // 토큰을 console에 출력 (개발 중)
+      setUser(user);
+      Alert.alert('로그인 성공', `환영합니다! ${user.nickname}`); 
 
       onLogin();  // 로그인 성공 시 홈 화면으로 이동
-      
-      Alert.alert('로그인 성공', `환영합니다! ${token.nickname}`); 
     } catch (error) {
       Alert.alert('로그인 실패', '아이디 또는 비밀번호가 틀렸습니다.');
        console.log('로그인 실패');

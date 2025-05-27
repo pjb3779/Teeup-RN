@@ -4,8 +4,14 @@ spring:
       uri: mongodb://localhost:27017/teeup-db
 
 server:
+  address: 0.0.0.0
   port: 8080
 
 # JWT 비밀 키 상용화할때 수정 보안에 매우 매우 중요!!
 jwt:
   secretKey: buaabuaa
+
+# 구글 api 키 넣기기
+google:
+  api:
+    key: AIzaSyCQhgbPmCKDKGANymujl7bPZwQ64a6NGBU

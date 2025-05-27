@@ -1,17 +1,17 @@
 import axios from 'axios';
 
-const API_URL = 'http://10.193.133.227:8080/api'; // 스프링 서버의 URL을 적어주세요.
+import { API_BASE_URL } from '@env'; // 스프링 서버의 URL을 적어주세요.
 
 //로그인 요청
 export const login = async (userid, password) => {
   try {
-    const response = await axios.post(`${API_URL}/auth/login`, {
+    const response = await axios.post(`${API_BASE_URL}/api/auth/login`, {
       userid,
       password,
     });
     console.log('로그인 요청 성공');
-    const { token } = response.data;
-    return token;  // 토큰을 반환
+    const { token, user } = response.data;
+    return { token, user };
   } catch (error) {
     console.error('로그인 실패ㅠㅠ:', error.response?.data || error.message);
     throw new Error('로그인 실패');
@@ -20,8 +20,11 @@ export const login = async (userid, password) => {
 
 // 회원가입 요청
 export const signup = async ({ userid, password, nickname }) => {
+  console.log('회원가입 요청 시도');
+  console.log('BASE_URL:', API_BASE_URL);
+
   try {
-    const response = await axios.post(`${API_URL}/auth/signup`, {
+    const response = await axios.post(`${API_BASE_URL}/api/auth/signup`, {
       userid,
       password,
       nickname,
@@ -30,6 +33,6 @@ export const signup = async ({ userid, password, nickname }) => {
     return response.data;
   } catch (error) {
     console.error('회원가입 실패:', error.response?.data || error.message);
-    throw new Error('회원가입 실패');
+    throw new Error('회원가입 요청 실패');
   }
 };
