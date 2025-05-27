@@ -1,17 +1,14 @@
 spring:
+  config:
+    import: optional:application-secret.yaml
+
   data:
     mongodb:
-      uri: mongodb://localhost:27017/teeup-db
+      uri: mongodb://${mongodb.username}:${mongodb.password}@ac-fntwfxt-shard-00-00.bbgx89l.mongodb.net:27017,ac-fntwfxt-shard-00-01.bbgx89l.mongodb.net:27017,ac-fntwfxt-shard-00-02.bbgx89l.mongodb.net:27017/teeup-db?ssl=true&replicaSet=atlas-owjper-shard-0&authSource=admin&retryWrites=true&w=majority
 
 server:
   address: 0.0.0.0
   port: 8080
 
-# JWT 비밀 키 상용화할때 수정 보안에 매우 매우 중요!!
 jwt:
   secretKey: buaabuaa
-
-# 구글 api 키 넣기기
-google:
-  api:
-    key: AIzaSyCQhgbPmCKDKGANymujl7bPZwQ64a6NGBU

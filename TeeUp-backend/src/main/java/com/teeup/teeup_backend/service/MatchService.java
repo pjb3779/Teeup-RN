@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.teeup.teeup_backend.dto.UserResponse;
@@ -17,6 +18,7 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class MatchService {
     
+    @Autowired
     private UserRepository userRepository;
     //private PreferenceRepository preferenceRepository;    //구현필요
 
