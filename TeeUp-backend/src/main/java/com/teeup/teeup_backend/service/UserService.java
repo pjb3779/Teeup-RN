@@ -43,4 +43,9 @@ public class UserService {
         }
         return Optional.empty(); // 실패
     }
+
+    // 회원 정보 처리 메서드
+    public Optional<User> getUserProfile(String openid){
+        return userRepository.findByOpenid(openid);
+    }
 }

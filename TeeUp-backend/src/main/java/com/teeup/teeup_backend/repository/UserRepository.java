@@ -14,4 +14,5 @@ import com.teeup.teeup_backend.model.User;
 public interface UserRepository extends MongoRepository<User, ObjectId> {
     // userid로 사용자 검색 (로그인에 사용)
     Optional<User> findByUserid(String userid);
+    Optional<User> findByOpenid(String openid);
 }
