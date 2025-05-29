@@ -15,6 +15,8 @@ import lombok.NoArgsConstructor;
 public class Location {
     @Id
     private ObjectId id;
+    
+    private ObjectId userId;
 
     private String country;
     private String state;

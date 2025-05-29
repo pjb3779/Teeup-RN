@@ -12,7 +12,7 @@ import com.teeup.teeup_backend.model.User;
 @Repository
 public interface  MatchRepository extends MongoRepository<User, ObjectId>{
     
-    Optional<User> findByUserid(String userid);
+    Optional<User> findByUserId(ObjectId userId);
 
     List<User> findAll();
 }

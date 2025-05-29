@@ -35,9 +35,9 @@ public class UserService {
     }
 
     //로그인 처리 메서드
-    public Optional<User> login(String userid, String password) {
+    public Optional<User> login(String loginId, String password) {
         //userid로 사용자 존재 여부 확인
-        Optional<User> userOpt = userRepository.findByUserid(userid);
+        Optional<User> userOpt = userRepository.findByLoginId(loginId);
         if(userOpt.isPresent() && passwordEncoder.matches(password, userOpt.get().getPassword())) {
             return userOpt;  // 비밀번호 일치하면 로그인 성공
         }

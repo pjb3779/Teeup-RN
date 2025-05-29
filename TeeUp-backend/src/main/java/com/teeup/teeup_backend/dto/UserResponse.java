@@ -10,13 +10,13 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class UserResponse {
-    private String id;
+    private String userId;
     private String nickname;
     private String golf_level;
     private String avatar_url;
 
     public UserResponse(User user) {
-        this.id = user.getId().toHexString();
+        this.userId = user.getUserId().toHexString();
         this.nickname = user.getNickname();
         this.golf_level = user.getGolfLevel();
         this.avatar_url = user.getAvatarUrl();

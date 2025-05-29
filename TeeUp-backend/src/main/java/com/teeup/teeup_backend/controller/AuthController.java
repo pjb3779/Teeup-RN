@@ -36,11 +36,11 @@ public class AuthController {
     //로그인인
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody LoginRequest req) {        
-        Optional<User> userOpt = userService.login(req.getUserid(), req.getPassword());
+        Optional<User> userOpt = userService.login(req.getLoginid(), req.getPassword());
 
         if(userOpt.isPresent()) {
             User user = userOpt.get();
-            String token = jwtUtils.generateJwtToken(user.getUserid()); 
+            String token = jwtUtils.generateJwtToken(user.getLoginId()); 
             return ResponseEntity.ok(new LoginResponse(user, token));    //사용자 존재시 200 ok + 사용자 정ㄷ보
         } else {
             return ResponseEntity.status(401).body("login failedㅠㅠ"); //로그인 실패 401 띄우기

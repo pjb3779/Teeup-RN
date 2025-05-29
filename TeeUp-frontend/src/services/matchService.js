@@ -13,14 +13,14 @@ export const fetchBuddyRecommendations = async (userId) => {
     });
     return response.data;
   } catch (error) {
-    console.error('추천 버디 불러오기 실패:', error.message);
+    console.error('추천 버디 불러오기 에러 상세:', error.response ?? error.message ?? error);
 
     // 실패 시 하드코딩된 임시 추천 목록 반환
     return [
       {
         id: 'fake1',
-        nickname: '홍길동',
-        golf_level: '중급자',
+        nickname: '추천 버디디',
+        golf_level: '실패 엉엉',
         avatar_url: 'https://via.placeholder.com/100',
       },
       {
