@@ -27,6 +27,8 @@ public class UserService {
         String encodedPassword = passwordEncoder.encode(req.getPassword());
 
         User user = new User();
+        user.setLoginId(req.getLoginid());
+        
         // SignupRequest의 필드를 User 객체로 복사
         BeanUtils.copyProperties(req, user);
         user.setPassword(encodedPassword);  // 암호화된 비밀번호 저장

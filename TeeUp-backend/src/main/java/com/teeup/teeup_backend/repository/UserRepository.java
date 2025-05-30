@@ -13,8 +13,8 @@ import com.teeup.teeup_backend.model.User;
 // MongoDB의 users 컬렉션과 연동되는 Repository
 @Repository
 public interface UserRepository extends MongoRepository<User, ObjectId> {
-    // userid로 사용자 검색 (로그인에 사용)
-    Optional<User> findByUserId(ObjectId userId);
-
+    // loginid로 사용자 검색 (로그인에 사용)
     Optional<User> findByLoginId(String loginId);
+
+    Optional<User> findByUserId(ObjectId userId);
 }
