@@ -3,13 +3,13 @@ import api from '../api'
 /**
  * 로그인한 사용자의 추천 버디 목록을 불러온다.
  * 실패 시 하드코딩된 가짜 데이터 반환.
- * @param {string} userId
+ * @param {string} loginId
  * @returns {Promise<Array>}
  */
-export const fetchBuddyRecommendations = async (userId) => {
+export const fetchBuddyRecommendations = async (loginId) => {
   try {
     const response = await api.get(`/match/recommendations`, {
-      params: { userId },
+      params: { loginId },
     });
     return response.data;
   } catch (error) {

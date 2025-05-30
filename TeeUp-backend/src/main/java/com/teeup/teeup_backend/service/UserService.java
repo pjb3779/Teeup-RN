@@ -9,6 +9,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import com.teeup.teeup_backend.dto.SignupRequest;
+import com.teeup.teeup_backend.exception.DuplicateLoginIdException;
 import com.teeup.teeup_backend.model.User;
 import com.teeup.teeup_backend.repository.UserRepository;
 
@@ -23,14 +24,19 @@ public class UserService {
 
     // 회원가입 처리 메서드
     public User register(SignupRequest req) {
+            //로그인 아이디 중복 확인
+            if (userRepository.findByLoginId(req.getLoginId()).isPresent()) {
+            // 중복 시 예외 던지기 (또는 원하는 에러 처리)
+            throw new DuplicateLoginIdException("이미 사용 중인 아이디입니다.");
+        }
+
         //비밀번호 암호화
         String encodedPassword = passwordEncoder.encode(req.getPassword());
 
         User user = new User();
-        user.setLoginId(req.getLoginid());
-        
         // SignupRequest의 필드를 User 객체로 복사
         BeanUtils.copyProperties(req, user);
+        user.setLoginId(req.getLoginId());
         user.setPassword(encodedPassword);  // 암호화된 비밀번호 저장
         user.setCreatedAt(LocalDateTime.now()); // 생성 시간 설정
         return userRepository.save(user); // DB에 저장

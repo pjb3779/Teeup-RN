@@ -5,7 +5,6 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -26,8 +25,8 @@ public class MatchService {
     private LocationRepository locationRepository;
     //private PreferenceRepository preferenceRepository;    //구현필요
 
-    public List<UserResponse> getRecommendations(ObjectId userId) {
-        Optional<User> userOpt = userRepository.findByUserId(userId);
+    public List<UserResponse> getRecommendations(String loginId) {
+        Optional<User> userOpt = userRepository.findByLoginId(loginId);
         if (userOpt.isEmpty()) return Collections.emptyList();
 
         User user = userOpt.get();
