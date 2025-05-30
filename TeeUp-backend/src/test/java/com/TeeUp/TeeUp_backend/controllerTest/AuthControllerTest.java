@@ -28,7 +28,6 @@ class AuthControllerTest {
         SignupRequest request = new SignupRequest();
         request.setUserid("test123456789");
         request.setPassword("123456");
-        request.setNickname("베이항");
 
         mockMvc.perform(post("/api/auth/signup")
                         .contentType(MediaType.APPLICATION_JSON)

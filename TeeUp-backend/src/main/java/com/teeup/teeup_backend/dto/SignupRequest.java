@@ -7,11 +7,6 @@ import lombok.Data;
 @Data
 public class SignupRequest {
     public String userid;
-    public String nickname;
     private String loginid;
     private String password;
-    public String avatarUrl;
-    public String gender;
-    public int  age;
-    public String golfLevel;
 }

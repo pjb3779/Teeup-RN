@@ -2,6 +2,7 @@ package com.teeup.teeup_backend.controller;
 
 import java.util.List;
 
+import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -23,7 +24,7 @@ public class MatchController {
     private MatchService matchService;
 
     @GetMapping("/recommendations")
-    public ResponseEntity<List<UserResponse>> getRecommendations(@RequestParam String userId) {
+    public ResponseEntity<List<UserResponse>> getRecommendations(@RequestParam ObjectId userId) {
         List<UserResponse> recommended = matchService.getRecommendations(userId);
         return ResponseEntity.ok(recommended);
     }
