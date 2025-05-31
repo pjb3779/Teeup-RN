@@ -21,7 +21,7 @@ import com.teeup.teeup_backend.dto.SignupRequest;
 import com.teeup.teeup_backend.exception.DuplicateLoginIdException;
 import com.teeup.teeup_backend.model.User;
 import com.teeup.teeup_backend.repository.UserRepository;
-
+import com.teeup.teeup_backend.dto.UserUpdateProfile;
 import jakarta.validation.constraints.Null;
 
 // 사용자 관련 핵심 비즈니스 로직 처리 서비스
@@ -67,14 +67,14 @@ public class UserService {
     }
 
     // 회원 정보 처리 메서드
-    public Optional<User> getUserProfile(String userid){
-        return userRepository.findByUserid(userid);
+    public Optional<User> getUserProfile(String loginId){
+        return userRepository.findByLoginId(loginId);
     }
 
     // 회원 정보 업데이트 메서드
-    public User updateUserProfile(String userid, UserUpdateProfile dto) {
+    public User updateUserProfile(String loginId, UserUpdateProfile dto) {
 
-        User user = userRepository.findByUserid(userid).orElseThrow(() -> new RuntimeException("사용자를 찾을 수 없습니다."));
+        User user = userRepository.findByLoginId(loginId).orElseThrow(() -> new RuntimeException("사용자를 찾을 수 없습니다."));
         System.out.println("업데이트 전 user: " + user);
 
         user.setNickname(dto.getNickname());
