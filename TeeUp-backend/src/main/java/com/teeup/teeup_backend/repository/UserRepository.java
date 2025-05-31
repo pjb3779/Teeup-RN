@@ -1,6 +1,7 @@
 package com.teeup.teeup_backend.repository;
 
 import java.util.Optional;
+import java.util.Spliterator.OfPrimitive;
 
 import org.bson.types.ObjectId;
 import org.springframework.data.mongodb.repository.MongoRepository;

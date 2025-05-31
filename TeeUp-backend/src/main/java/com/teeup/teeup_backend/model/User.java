@@ -16,17 +16,22 @@ import lombok.NoArgsConstructor;
 @Document(collection = "users")
 public class User {
     @Id
-    private ObjectId id;        //고유 아이디 번호
-    private String openid;      //공개 고유 아이디디
+    private ObjectId openid;      //userId
 
-    private String userid;      //로그인 아이디
+    private String userid;      //loginid
     private String password;    //로그인 비밀번호
-    private String nickname;
     private String avatarUrl;
     private String gender;
     private int age;
     private String golfLevel;
+    private String nickname;
     
-    
+    public String getNickname() {
+        return this.nickname;
+    }
+    public String getId() {
+        return this.userid != null ? this.userid : null;
+    }
+
     private LocalDateTime createdAt = LocalDateTime.now();
 }

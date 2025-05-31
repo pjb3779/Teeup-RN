@@ -1,26 +1,33 @@
-import React, { useEffect, useState } from 'react';
-import { View, Text, StyleSheet, ActivityIndicator, Image, Touchable, TouchableOpacity } from 'react-native';
+import React, { useState } from 'react';
+import { View, Text, StyleSheet, ActivityIndicator, Image, TouchableOpacity } from 'react-native';
 import { getUserProfile } from '../../services/userService';
+import { useNavigation, useFocusEffect } from '@react-navigation/native';  
 
 export default function Profile() {
   const [profile, setProfile] = useState(null);
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(true);
+  const navigation = useNavigation();
 
-  useEffect(() => {
-    const fetchProfile = async () => {
-      try {
-        const userData = await getUserProfile();
-        setProfile(userData);
-      } catch (error) {
-        setError(error.message || '프로필을 불러오는 중 에러가 발생했습니다');
-      } finally {
-        setLoading(false);
-      }
-    };
+  // 프로필 정보를 불러오는 함수
+  useFocusEffect(
+    React.useCallback(() => {
+      const loadProfile = async () => {
+        try {
+          setLoading(true);
+          const latestProfile = await getUserProfile();
+          setProfile(latestProfile);
+        } catch (err) {
+          setError(err.message || '프로필 정보를 불러오는 중 오류가 발생했습니다.');
+        } finally {
+          setLoading(false);
+        }
+      };
 
-    fetchProfile();
-  }, []);
+      loadProfile();
+    }, [])
+  );
+
 
   if (loading) {
     return (
@@ -40,7 +47,7 @@ export default function Profile() {
   }
 
   const handleEditProfile = () => {
-    navaigation.navaigate("EditProfile", {profile});
+    navigation.navigate("EditProfileScreen", {profile}); // EditProfile 화면으로 이동
   };
 
   return (
