@@ -16,8 +16,11 @@ import com.teeup.teeup_backend.model.User;
 import com.teeup.teeup_backend.service.UserService;
 import com.teeup.teeup_backend.util.JwtUtils;
 
+import lombok.extern.slf4j.Slf4j;
+
 @RestController
 @RequestMapping("/api/auth")
+@Slf4j
 public class AuthController {
 
     @Autowired
@@ -36,13 +39,17 @@ public class AuthController {
     //로그인인
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody LoginRequest req) {        
-        Optional<User> userOpt = userService.login(req.getUserid(), req.getPassword());
+        log.info("🔍 받은 로그인 요청 전체: {}", req);
+        log.info("🔍 로그인 요청 받음 - loginId: {}", req.getLoginId());
+
+        Optional<User> userOpt = userService.login(req.getLoginId(), req.getPassword());
 
         if(userOpt.isPresent()) {
             User user = userOpt.get();
-            String token = jwtUtils.generateJwtToken(user.getUserid()); 
-            return ResponseEntity.ok(new LoginResponse(user, token));    //사용자 존재시 200 ok + 사용자 정보
+            String token = jwtUtils.generateJwtToken(user.getLoginId()); 
+            return ResponseEntity.ok(new LoginResponse(user, token));    //사용자 존재시 200 ok + 사용자 정ㄷ보
         } else {
+            log.warn("❌ 로그인 실패 - userOpt is empty for loginId: {}", req.getLoginId());
             return ResponseEntity.status(401).body("login failedㅠㅠ"); //로그인 실패 401 띄우기
         }
     }

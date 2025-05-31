@@ -6,12 +6,6 @@ import lombok.Data;
 // 클라이언트에서 전송하는 회원가입 요청 데이터 포맷
 @Data
 public class SignupRequest {
-    public String openid;
-    public String nickname;
-    private String userid;
+    private String loginId;
     private String password;
-    public String avatarUrl;
-    public String gender;
-    public int  age;
-    public String golfLevel;
 }

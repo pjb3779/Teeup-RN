@@ -16,9 +16,9 @@ import lombok.NoArgsConstructor;
 @Document(collection = "users")
 public class User {
     @Id
-    private ObjectId openid;      //userId
+    private ObjectId userId;      //공개 고유 아이디디
 
-    private String userid;      //loginid
+    private String loginId;      //로그인 아이디
     private String password;    //로그인 비밀번호
     private String avatarUrl;
     private String gender;
@@ -30,7 +30,7 @@ public class User {
         return this.nickname;
     }
     public String getId() {
-        return this.userid != null ? this.userid : null;
+        return this.loginId != null ? this.loginId : null;
     }
 
     private LocalDateTime createdAt = LocalDateTime.now();

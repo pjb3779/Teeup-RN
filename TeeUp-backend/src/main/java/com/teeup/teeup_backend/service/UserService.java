@@ -18,8 +18,7 @@ import java.util.UUID;
 
 
 import com.teeup.teeup_backend.dto.SignupRequest;
-import com.teeup.teeup_backend.dto.UserProfileResponse;
-import com.teeup.teeup_backend.dto.UserUpdateProfile;
+import com.teeup.teeup_backend.exception.DuplicateLoginIdException;
 import com.teeup.teeup_backend.model.User;
 import com.teeup.teeup_backend.repository.UserRepository;
 
@@ -39,21 +38,28 @@ public class UserService {
 
     // 회원가입 처리 메서드 
     public User register(SignupRequest req) {
+            //로그인 아이디 중복 확인
+            if (userRepository.findByLoginId(req.getLoginId()).isPresent()) {
+            // 중복 시 예외 던지기 (또는 원하는 에러 처리)
+            throw new DuplicateLoginIdException("이미 사용 중인 아이디입니다.");
+        }
+
         //비밀번호 암호화
         String encodedPassword = passwordEncoder.encode(req.getPassword());
 
         User user = new User();
         // SignupRequest의 필드를 User 객체로 복사
         BeanUtils.copyProperties(req, user);
+        user.setLoginId(req.getLoginId());
         user.setPassword(encodedPassword);  // 암호화된 비밀번호 저장
         user.setCreatedAt(LocalDateTime.now()); // 생성 시간 설정
         return userRepository.save(user); // DB에 저장
     }
 
     //로그인 처리 메서드
-    public Optional<User> login(String userid, String password) {
+    public Optional<User> login(String loginId, String password) {
         //userid로 사용자 존재 여부 확인
-        Optional<User> userOpt = userRepository.findByUserid(userid);
+        Optional<User> userOpt = userRepository.findByLoginId(loginId);
         if(userOpt.isPresent() && passwordEncoder.matches(password, userOpt.get().getPassword())) {
             return userOpt;  // 비밀번호 일치하면 로그인 성공
         }

@@ -1,5 +1,6 @@
 package com.teeup.teeup_backend.controller;
 
+import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -26,11 +27,10 @@ public class LocationController {
      *  사용자의 현재 위도, 경도를 사용해 가장 가까운 지역을 반환하는 API
      */
     @GetMapping("/nearest")
-    public ResponseEntity<LocationDto> getNearestCity(@RequestParam double lat, @RequestParam double lng) {
+    public ResponseEntity<LocationDto> getNearestCity(@RequestParam String userId, @RequestParam double lat, @RequestParam double lng) {
         log.info("📍 위치 요청 받음: lat={}, lng={}", lat, lng);
 
-
-        LocationDto location = locationService.findNearest(lat, lng);
+        LocationDto location = locationService.findNearest(new ObjectId(userId), lat, lng);
         return ResponseEntity.ok(location);
     }
 }

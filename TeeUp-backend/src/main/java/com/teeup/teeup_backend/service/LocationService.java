@@ -13,9 +13,11 @@ import com.teeup.teeup_backend.model.Location;
 import com.teeup.teeup_backend.repository.LocationRepository;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class LocationService {
 
     @Value("${google.api.key}") // application.yml 또는 .properties에 있는 Google API 키 주입
@@ -29,7 +31,7 @@ public class LocationService {
      * country/state/city 정보를 파싱하여 LocationDto로 반환하며,
      * DB에 저장까지 수행함.
      */
-    public LocationDto findNearest(double lat, double lng) {
+    public LocationDto findNearest(ObjectId userId, double lat, double lng) {
         // Google Maps Geocoding API 호출 URL 생성
         String url = String.format(
             "https://maps.googleapis.com/maps/api/geocode/json?latlng=%f,%f&language=ko&key=%s",
@@ -37,7 +39,10 @@ public class LocationService {
         );
 
         // Google API 호출
+        log.info("📍 google API 호출전");
         ResponseEntity<String> response = restTemplate.getForEntity(url, String.class);
+
+        log.info("📍 google API 호출후");
         if (!response.getStatusCode().is2xxSuccessful()) {
             throw new RuntimeException("Google API 호출 실패");
         }
@@ -48,6 +53,7 @@ public class LocationService {
         // 파싱된 주소 정보를 MongoDB에 저장
         Location saved = new Location(
             new ObjectId(),                         // ID 생성
+            userId,
             locationDto.getCountry(),               // 국가 코드 (예: KR)
             locationDto.getState(),                 // 도/광역시
             locationDto.getCity(),                  // 시/구
@@ -94,4 +100,6 @@ public class LocationService {
             throw new RuntimeException("Google 응답 파싱 실패", e);
         }
     }
+
+    
 }

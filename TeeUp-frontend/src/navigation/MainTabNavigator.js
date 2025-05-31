@@ -1,7 +1,7 @@
 import React from 'react';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import HomeScreen from '../screens/main/HomeScreen';
-import ChatScreen from '../screens/main/ChatScreen';
+import ChatScreen from '../screens/main/Chat/ChatScreen';
 import ReservationScreen from '../screens/main/ReservationScreen';
 import ProfileScreen from '../screens/main/ProfileScreen';
 
