@@ -19,6 +19,14 @@
         "ITSAppUsesNonExemptEncryption": false
       }
     },
+    "android": {
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/adaptive-icon.png",
+        "backgroundColor": "#ffffff"
+      },
+      "edgeToEdgeEnabled": true,
+      "package": "com.beomi_01.golfapp"
+    },
     "web": {
       "favicon": "./assets/favicon.png"
     },

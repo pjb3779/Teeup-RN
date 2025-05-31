@@ -10,14 +10,10 @@ export default function HomeScreen() {
 
   const location = { state: '구글api', city: '안돼 엉엉' }; // 임시 위치
 
-  console.log('유저 정보:', user);
-  console.log('유저 아이디:', user.loginId);
-
   useEffect(() => {
     const loadRecommendations = async () => {
       try {
-        console.log(user.loginId);
-        const data = await fetchBuddyRecommendations(user.loginId);
+        const data = await fetchBuddyRecommendations(user.id);
         setBuddies(data);
       } catch (error) {
         console.error('버디 추천 실패:', error);
@@ -46,8 +42,8 @@ export default function HomeScreen() {
           keyExtractor={(item) => item.id}
           renderItem={({ item }) => (
             <View style={styles.card}>
-              <Text style={styles.name}>{item.loginId}</Text>
-              <Text style={styles.name}> 들어있는게 없어 </Text>
+              <Text style={styles.name}>{item.nickname}</Text>
+              <Text style={styles.level}>{item.golf_level}</Text>
             </View>
           )}
           showsHorizontalScrollIndicator={false}

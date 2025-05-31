@@ -5,7 +5,7 @@ import { signup } from '../../services/authService'; // 회원가입 API 호출 
 import { Picker } from '@react-native-picker/picker';
 
 export default function SignUpScreen({ navigation }) {
-  const [loginId, setLoginId] = useState('');
+  const [userid, setUserid] = useState('');
   const [password, setPassword] = useState('');
   const [nickname, setNickname] = useState('');
   const [gender, setGender] = useState('');
@@ -14,37 +14,25 @@ export default function SignUpScreen({ navigation }) {
   const [showPassword, setShowPassword] = useState(false);
 
   const handleSignup = async () => {
-    if (!loginId || !password || !nickname || !age || !golfLevel || !gender) {
+    if (!userid || !password || !nickname || !age || !golfLevel || !gender) {
       Alert.alert('입력 오류', '모든 항목을 입력해주세요.');
       return;
     }
 
     try {
       await signup({ 
-        loginId,
+        userid,
         password,
-        // nickname,
-        // gender,
-        // age: parseInt(age),
-        // golf_level: golfLevel 
+        nickname,
+        gender,
+        age: parseInt(age),
+        golf_level: golfLevel 
       });
       Alert.alert('회원가입 성공', '로그인 화면으로 이동합니다.');
       navigation.navigate('Login');
     } catch (error) {
-      console.log('error 전체:', error);
-      console.log('error.response:', error.response);
-      console.log('error.response.data:', error.response?.data);
-
-      let message = '오류가 발생했습니다.';
-      if (error.response?.data) {
-        if (typeof error.response.data === 'string') {
-          message = error.response.data;
-        } else if (typeof error.response.data === 'object') {
-          message = error.response.data.message || message;
-        }
-      }
-
-      Alert.alert('회원가입 실패', message);
+      console.error('회원가입 실패', error);
+      Alert.alert('회원가입 실패', error.response?.data || '오류가 발생했습니다.');
     }
   };
 
@@ -61,8 +49,8 @@ export default function SignUpScreen({ navigation }) {
             style={styles.input}
             placeholder="Enter UserID"
             placeholderTextColor="#aaa"
-            value={loginId}           // 수정된 부분
-            onChangeText={setLoginId} // 수정된 부분
+            value={userid}
+            onChangeText={setUserid}
           />
         </View>
       </View>
@@ -136,7 +124,7 @@ export default function SignUpScreen({ navigation }) {
         </View>
       </View>
 
-      {/* 골프 레벨 입력 */}
+      {/* 나이 입력*/}
       <View style={styles.inputGroup}>
         <Text style={styles.label}>Golf Level</Text>
         <View style={styles.inputWrapper}>
@@ -166,6 +154,7 @@ export default function SignUpScreen({ navigation }) {
           <Text style={styles.promptLink}>Sign In</Text>
         </TouchableOpacity>
       </View>
+
     </View>
   );
 }
