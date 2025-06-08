@@ -10,13 +10,6 @@ server:
   address: 0.0.0.0
   port: 8080
 
-jwt:
-  secretKey: buaabuaa  # 여기에 비밀 키 값을 설정
-
-google:
-  api:
-    key: AIzaSyCQhgbPmCKDKGANymujl7bPZwQ64a6NGBU  # 구글 API 키 설정
-
 #프로필 사진 저장
 file: 
   upload-dir: uploads/avatars
