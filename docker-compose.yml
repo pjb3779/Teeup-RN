@@ -1,7 +1,7 @@
 version: '3.8'
 services:
   backend:
-    build: ./teeup-backend
+    build: ./TeeUp-backend
     container_name: teeup-backend
     ports:
       - "8080:8080"
