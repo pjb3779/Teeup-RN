@@ -35,10 +35,6 @@ export const signup = async ({ userid, password, nickname }) => {
     const response = await axios.post(`${API_BASE_URL}/api/auth/signup`, {
       userid,
       password,
-      nickname,
-      gender,
-      age,
-      golfLevel,
     });
     console.log('회원가입 요청 성공');
     return response.data;
