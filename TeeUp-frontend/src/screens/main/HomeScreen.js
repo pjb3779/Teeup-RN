@@ -13,8 +13,7 @@ export default function HomeScreen() {
   useEffect(() => {
     const loadRecommendations = async () => {
       try {
-        console.log(user.userid);
-        const data = await fetchBuddyRecommendations(user.userid);
+        const data = await fetchBuddyRecommendations(user.id);
         setBuddies(data);
       } catch (error) {
         console.error('버디 추천 실패:', error);
@@ -23,7 +22,7 @@ export default function HomeScreen() {
       }
     };
     loadRecommendations();
-  }, [user.userid]);
+  }, [user.id]);
 
   return (
     <View style={styles.container}>

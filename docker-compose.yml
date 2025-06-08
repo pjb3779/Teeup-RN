@@ -1,0 +1,22 @@
+version: '3.8'
+services:
+  backend:
+    build: ./teeup-backend
+    container_name: teeup-backend
+    ports:
+      - "8080:8080"
+    depends_on:
+      - mongo
+    restart: always
+
+  mongo:
+    image: mongo:6
+    container_name: teeup-mongo
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo-data:/data/db
+    restart: always
+
+volumes:
+  mongo-data:

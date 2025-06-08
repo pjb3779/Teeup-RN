@@ -4,7 +4,7 @@ import SplashScreen from '../screens/SplashScreen'; // 로그인, 회원가입 �
 import LoginScreen from '../screens/auth/LoginScreen'; // 로그인 화면
 import SignUpScreen from '../screens/auth/SignUpScreen'; // 회원가입 화면
 import MainTabNavigator from './MainTabNavigator'; // 로그인 후 메인 화면
-
+import EditProfileScreen from '../screens/main/EditProfileScreen';
 const Stack = createNativeStackNavigator();
 
 export default function RootNavigator() {
@@ -27,7 +27,10 @@ export default function RootNavigator() {
         <Stack.Screen name="SignUp" component={SignUpScreen} />
       </>
     ) : (
-      <Stack.Screen name="Main" component={MainTabNavigator} />
+      <>
+        <Stack.Screen name="Main" component={MainTabNavigator} />
+        <Stack.Screen name="EditProfileScreen" component={EditProfileScreen} />
+      </>
     )}
   </Stack.Navigator>
   );

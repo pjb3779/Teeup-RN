@@ -20,12 +20,18 @@ public class User {
 
     private String loginId;      //로그인 아이디
     private String password;    //로그인 비밀번호
-    private String nickname;
     private String avatarUrl;
     private String gender;
     private int age;
     private String golfLevel;
+    private String nickname;
     
-    
+    public String getNickname() {
+        return this.nickname;
+    }
+    public String getId() {
+        return this.loginId != null ? this.loginId : null;
+    }
+
     private LocalDateTime createdAt = LocalDateTime.now();
 }

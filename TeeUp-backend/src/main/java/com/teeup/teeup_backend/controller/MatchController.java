@@ -23,8 +23,8 @@ public class MatchController {
     private MatchService matchService;
 
     @GetMapping("/recommendations")
-    public ResponseEntity<List<UserResponse>> getRecommendations(@RequestParam String userId) {
-        List<UserResponse> recommended = matchService.getRecommendations(userId);
+    public ResponseEntity<List<UserResponse>> getRecommendations(@RequestParam String loginId) {
+        List<UserResponse> recommended = matchService.getRecommendations(loginId);
         return ResponseEntity.ok(recommended);
     }
 }

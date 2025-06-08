@@ -26,9 +26,8 @@ class AuthControllerTest {
     @Test
     void 회원가입_요청_성공() throws Exception {
         SignupRequest request = new SignupRequest();
-        request.setUserid("test123456789");
+        request.setLoginId("test123456789");
         request.setPassword("123456");
-        request.setNickname("베이항");
 
         mockMvc.perform(post("/api/auth/signup")
                         .contentType(MediaType.APPLICATION_JSON)
