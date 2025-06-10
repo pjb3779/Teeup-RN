@@ -29,9 +29,9 @@ export const login = async (loginId, password) => {
 // 회원가입 요청
 export const signup = async ({ loginId, password }) => {
   console.log('회원가입 요청 시도');
-  console.log('BASE_URL:', API_BASE_URL);  // BASE_URL 확인
-  console.log('회원가입 URL:', `${API_BASE_URL}/api/auth/signup`);  // 실제 요청 URL 확인
-  console.log('회원가입 데이터:', { loginId, password });  // 보내는 데이터 확인
+  console.log('BASE_URL:', API_BASE_URL);
+  console.log('회원가입 URL:', `${API_BASE_URL}/api/auth/signup`);
+  console.log('회원가입 데이터:', { loginId, password });
 
   try {
     const response = await axios.post(`${API_BASE_URL}/api/auth/signup`, {
@@ -42,6 +42,13 @@ export const signup = async ({ loginId, password }) => {
     return response.data;
   } catch (error) {
     console.error('회원가입 실패:', error.response?.data || error.message);
-    throw new Error('회원가입 요청 실패');
+
+    // 에러 코드가 409일 때, 중복된 회원 가입 처리
+    if (error.response?.status === 409) {
+      throw new Error('이미 존재하는 회원입니다. 다른 아이디를 시도해주세요.');
+    }
+
+    // 그 외 다른 오류 처리
+    throw new Error(error.response?.data?.message || '오류가 발생했습니다.');
   }
 };

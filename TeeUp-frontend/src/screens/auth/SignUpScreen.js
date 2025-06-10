@@ -22,8 +22,8 @@ export default function SignUpScreen({ navigation }) {
       Alert.alert('회원가입 성공', '로그인 화면으로 이동합니다.');
       navigation.navigate('Login');
     } catch (error) {
-      console.error('회원가입 실패 사인업 스크린', error.response);
-      Alert.alert('회원가입 실패 사인업 어럴트트', error.response?.data || '오류가 발생했습니다.');
+      console.error('회원가입 실패 사인업 스크린', error.message);
+      Alert.alert('회원가입 실패', error.message || '오류가 발생했습니다.');
     }
   };
 
