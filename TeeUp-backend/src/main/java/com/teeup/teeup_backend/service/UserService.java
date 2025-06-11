@@ -16,7 +16,6 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.UUID;
 
-
 import com.teeup.teeup_backend.dto.SignupRequest;
 import com.teeup.teeup_backend.exception.DuplicateLoginIdException;
 import com.teeup.teeup_backend.model.User;
@@ -31,43 +30,43 @@ public class UserService {
     @Autowired
     private UserRepository userRepository;
 
-    private BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder(); //비밀번호 암호황
+    private BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder(); // 비밀번호 암호황
 
     @Value("${file.upload-dir}")
     private String uploadDir;
 
-    // 회원가입 처리 메서드 
+    // 회원가입 처리 메서드
     public User register(SignupRequest req) {
-            //로그인 아이디 중복 확인
-            if (userRepository.findByLoginId(req.getLoginId()).isPresent()) {
+        // 로그인 아이디 중복 확인
+        if (userRepository.findByLoginId(req.getLoginId()).isPresent()) {
             // 중복 시 예외 던지기 (또는 원하는 에러 처리)
             throw new DuplicateLoginIdException("이미 사용 중인 아이디입니다.");
         }
 
-        //비밀번호 암호화
+        // 비밀번호 암호화
         String encodedPassword = passwordEncoder.encode(req.getPassword());
 
         User user = new User();
         // SignupRequest의 필드를 User 객체로 복사
         BeanUtils.copyProperties(req, user);
         user.setLoginId(req.getLoginId());
-        user.setPassword(encodedPassword);  // 암호화된 비밀번호 저장
+        user.setPassword(encodedPassword); // 암호화된 비밀번호 저장
         user.setCreatedAt(LocalDateTime.now()); // 생성 시간 설정
         return userRepository.save(user); // DB에 저장
     }
 
-    //로그인 처리 메서드
+    // 로그인 처리 메서드
     public Optional<User> login(String loginId, String password) {
-        //userid로 사용자 존재 여부 확인
+        // userid로 사용자 존재 여부 확인
         Optional<User> userOpt = userRepository.findByLoginId(loginId);
-        if(userOpt.isPresent() && passwordEncoder.matches(password, userOpt.get().getPassword())) {
-            return userOpt;  // 비밀번호 일치하면 로그인 성공
+        if (userOpt.isPresent() && passwordEncoder.matches(password, userOpt.get().getPassword())) {
+            return userOpt; // 비밀번호 일치하면 로그인 성공
         }
         return Optional.empty(); // 실패
     }
 
     // 회원 정보 처리 메서드
-    public Optional<User> getUserProfile(String loginId){
+    public Optional<User> getUserProfile(String loginId) {
         return userRepository.findByLoginId(loginId);
     }
 
@@ -89,18 +88,18 @@ public class UserService {
     }
 
     // 회원 아바타 저장 메서드
-    public String storeUserAvatar(String userid, MultipartFile file) throws IOException{
-        
+    public String storeUserAvatar(String userid, MultipartFile file) throws IOException {
+
         File dir = new File(uploadDir);
-        if(!dir.exists()){
+        if (!dir.exists()) {
             dir.mkdirs();
             System.out.println("Dir 생성 완료 !! ");
         }
 
         String originFileName = file.getOriginalFilename();
-        String ext = " ";   // 확장자명
+        String ext = " "; // 확장자명
         // 확장자 추출
-        if(originFileName != null && originFileName.contains(".")){
+        if (originFileName != null && originFileName.contains(".")) {
             ext = originFileName.substring(originFileName.lastIndexOf('.'));
         }
 
@@ -112,5 +111,5 @@ public class UserService {
         file.transferTo(new File(filepath));
 
         return "/uploads/avatars/" + fileName;
-    }   
+    }
 }

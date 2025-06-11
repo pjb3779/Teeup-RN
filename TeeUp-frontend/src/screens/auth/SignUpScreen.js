@@ -4,26 +4,26 @@ import { MaterialIcons } from '@expo/vector-icons'; // 아이콘 라이브러리
 import { signup } from '../../services/authService'; // 회원가입 API 호출 함수
 
 export default function SignUpScreen({ navigation }) {
-  const [userid, setUserid] = useState('');
+  const [loginId, setLoginId] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
 
   const handleSignup = async () => {
-    if (!userid || !password) {
+    if (!loginId || !password) {
       Alert.alert('입력 오류', '모든 항목을 입력해주세요.');
       return;
     }
 
     try {
       await signup({ 
-        userid,
+        loginId,
         password,
       });
       Alert.alert('회원가입 성공', '로그인 화면으로 이동합니다.');
       navigation.navigate('Login');
     } catch (error) {
-      console.error('회원가입 실패 사인업 스크린', error.response);
-      Alert.alert('회원가입 실패 사인업 어럴트트', error.response?.data || '오류가 발생했습니다.');
+      console.error('회원가입 실패 사인업 스크린', error.message);
+      Alert.alert('회원가입 실패', error.message || '오류가 발생했습니다.');
     }
   };
 
@@ -40,8 +40,8 @@ export default function SignUpScreen({ navigation }) {
             style={styles.input}
             placeholder="Enter UserID"
             placeholderTextColor="#aaa"
-            value={userid}
-            onChangeText={setUserid}
+            value={loginId}
+            onChangeText={setLoginId}
           />
         </View>
       </View>
