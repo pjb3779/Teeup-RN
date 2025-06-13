@@ -13,6 +13,5 @@ server:
 #프로필 사진 저장
 file: 
   upload-dir: uploads/avatars
-jwt:
+  
   secretKey: buaabuaa
-

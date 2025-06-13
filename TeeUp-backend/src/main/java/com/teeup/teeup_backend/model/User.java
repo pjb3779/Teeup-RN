@@ -25,7 +25,9 @@ public class User {
     private int age;
     private String golfLevel;
     private String nickname;
-    
+    private int FollowerCount = 0;
+    private int FollowingCount = 0;
+
     public String getNickname() {
         return this.nickname;
     }

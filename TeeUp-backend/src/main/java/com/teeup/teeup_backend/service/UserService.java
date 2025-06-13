@@ -16,7 +16,7 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.UUID;
 
-
+import com.teeup.teeup_backend.config.S3config;
 import com.teeup.teeup_backend.dto.SignupRequest;
 import com.teeup.teeup_backend.exception.DuplicateLoginIdException;
 import com.teeup.teeup_backend.model.User;
@@ -88,29 +88,23 @@ public class UserService {
         return updateUser;
     }
 
+    private final S3Service s3Service;
+    
+    public UserService(UserRepository userRepository, S3Service s3Service) {
+        this.userRepository = userRepository;
+        this.s3Service = s3Service;
+    }
+
     // 회원 아바타 저장 메서드
-    public String storeUserAvatar(String userid, MultipartFile file) throws IOException{
-        
-        File dir = new File(uploadDir);
-        if(!dir.exists()){
-            dir.mkdirs();
-            System.out.println("Dir 생성 완료 !! ");
-        }
+    public String storeUserAvatar(String loginId, MultipartFile file) throws IOException {
+        // S3Service의 uploadFileToS3 호출
+        String avatarUrl = s3Service.uploadFileToS3(file);
 
-        String originFileName = file.getOriginalFilename();
-        String ext = " ";   // 확장자명
-        // 확장자 추출
-        if(originFileName != null && originFileName.contains(".")){
-            ext = originFileName.substring(originFileName.lastIndexOf('.'));
-        }
+        User user = userRepository.findByLoginId(loginId)
+            .orElseThrow(() -> new RuntimeException("사용자를 찾을 수 없습니다."));
+        user.setAvatarUrl(avatarUrl);
+        userRepository.save(user);
+        return avatarUrl;
+    }
 
-        // UUID로 새파일명 생성
-        String fileName = UUID.randomUUID().toString() + ext;
-        // 새로운 파일 경로 생성
-        String filepath = Paths.get(uploadDir).resolve(fileName).toString();
-
-        file.transferTo(new File(filepath));
-
-        return "/uploads/avatars/" + fileName;
-    }   
 }

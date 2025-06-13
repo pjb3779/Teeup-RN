@@ -26,44 +26,33 @@ import org.springframework.web.bind.annotation.RequestParam;
 @RequestMapping("/api/profile")
 public class UserProfileController {
 
-    @Autowired
-    private UserService userService;
+    private final UserService userService;
+    private final JwtUtils jwtUtils;
+    private final UserRepository userRepository;
 
     @Autowired
-    private JwtUtils jwtUtils;
+    public UserProfileController(UserService userService, JwtUtils jwtUtils, UserRepository userRepository) {
+        this.userService = userService;
+        this.jwtUtils = jwtUtils;
+        this.userRepository = userRepository;
+    }
 
     @GetMapping
-    public ResponseEntity<?> getProfile(@RequestHeader("Authorization") String authHead) {
-        System.out.println("📦 전달받은 Authorization 헤더: " + authHead);
-
+    public ResponseEntity<?> getProfile(String loginId) {
         try {
-            // Bearer 부분 삭제 후 userid 추출
-            String rawToken = authHead.replace("Bearer ", "");
-            System.out.println("📦 추출된 토큰: " + rawToken);
-            String userid = jwtUtils.getUserNameFromJwtToken(rawToken);
-            System.out.println("📦 추출된 userid: " + userid);
-
-            if(userid == null || userid.isEmpty()) {
-                return ResponseEntity.status(401).body("야 userid가 아마 없을껄?");
-            }
-
-            // userid 기준 사용자 조회
-            Optional<User> userOpt = userService.getUserProfile(userid);
-
+            Optional<User> userOpt = userRepository.findByLoginId(loginId);
             if (userOpt.isPresent()) {
                 User user = userOpt.get();
-
                 UserProfileResponse profile = new UserProfileResponse(
-                    user.getNickname(),
-                    user.getAvatarUrl(),
-                    user.getGender(),
-                    user.getAge(),
-                    user.getGolfLevel()
+                        user.getNickname(),
+                        user.getAvatarUrl(),
+                        user.getGender(),
+                        user.getAge(),
+                        user.getGolfLevel()
                 );
-
                 return ResponseEntity.ok(profile);
             } else {
-                return ResponseEntity.status(404).body("뭔가 단단히 잘못된거 같습니다만");
+                return ResponseEntity.status(404).body("사용자를 찾을 수 없습니다.");
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -72,50 +61,33 @@ public class UserProfileController {
     }
 
     @PutMapping("/edit")
-    public ResponseEntity<?> updateProfile(@RequestHeader("Authorization") String authHead, @RequestBody @Valid UserUpdateProfile dto){
-        try{
-
-            String rawToken = authHead.replace("Bearer ", "");
-            String userid = jwtUtils.getUserNameFromJwtToken(rawToken);
-
-            if(userid == null || userid.isEmpty()) {
-                return ResponseEntity.status(401).body("야 userid가 아마 없을껄?");
-            }
-
-            User updated = userService.updateUserProfile(userid, dto);
+    public ResponseEntity<?> updateProfile(String loginId, @RequestBody @Valid UserUpdateProfile dto) {
+        try {
+            User updated = userService.updateUserProfile(loginId, dto);
             UserUpdateProfile updatedProfile = new UserUpdateProfile();
             updatedProfile.setNickname(updated.getNickname());
             updatedProfile.setAvatarUrl(updated.getAvatarUrl());
             updatedProfile.setGender(updated.getGender());
             updatedProfile.setAge(updated.getAge());
             updatedProfile.setGolfLevel(updated.getGolfLevel());
-
             return ResponseEntity.ok(updatedProfile);
-        }
-        catch(Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
             return ResponseEntity.status(401).body("업데이트 실패 ㅜㅜ");
         }
     }
 
     @PostMapping("/avatar")
-    public ResponseEntity<?> uploadAvatar(@RequestHeader("Authorization") String authHead, @RequestParam("file") MultipartFile file){
-        try{
-            String rawToken = authHead.replace("Bearer ", "");
-            String userid = jwtUtils.getUserNameFromJwtToken(rawToken);
+    public ResponseEntity<?> uploadAvatar(@RequestHeader("loginId") String loginId, @RequestParam("file") MultipartFile file) {
 
-            if(userid == null || userid.isEmpty()) {
-                return ResponseEntity.status(401).body("야 userid가 아마 없을껄?");
-            }
-            
-            String avataUrl = userService.storeUserAvatar(userid, file);
-            
+        System.out.println("\n\n\n\nAvatar upload requested for loginId: " + loginId);
+
+        try {
+            String avatarUrl = userService.storeUserAvatar(loginId, file);
             UserUpdateProfile updatedProfile = new UserUpdateProfile();
-            updatedProfile.setAvatarUrl(avataUrl);
-
+            updatedProfile.setAvatarUrl(avatarUrl);
             return ResponseEntity.ok(updatedProfile);
-        }
-        catch(Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
             return ResponseEntity.status(500).body("아바타 업로드 실패");
         }
