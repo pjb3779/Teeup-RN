@@ -16,7 +16,7 @@ import lombok.NoArgsConstructor;
 @Document(collection = "users")
 public class User {
     @Id
-    private ObjectId userId;      //공개 고유 아이디디
+    private ObjectId userId;      //고유 아이디
 
     private String loginId;      //로그인 아이디
     private String password;    //로그인 비밀번호
