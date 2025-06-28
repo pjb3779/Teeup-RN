@@ -20,53 +20,47 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class LocationService {
 
-    @Value("${google.api.key}") // application.yml 또는 .properties에 있는 Google API 키 주입
+    @Value("${google.api.key}")
     private String googleApiKey;
 
-    private final RestTemplate restTemplate = new RestTemplate(); // 외부 API 호출용 HTTP 클라이언트
-    private final LocationRepository locationRepository; // MongoDB 저장용 레포지토리
+    private final RestTemplate restTemplate;
+    private final LocationRepository locationRepository;
 
-    /**
-     * 위도/경도를 기반으로 Google Geocoding API를 호출하고,
-     * country/state/city 정보를 파싱하여 LocationDto로 반환하며,
-     * DB에 저장까지 수행함.
-     */
-    public LocationDto findNearest(ObjectId userId, double lat, double lng) {
-        // Google Maps Geocoding API 호출 URL 생성
+    public LocationDto findNearest(String loginId, double lat, double lng) {
         String url = String.format(
             "https://maps.googleapis.com/maps/api/geocode/json?latlng=%f,%f&language=ko&key=%s",
             lat, lng, googleApiKey
         );
 
-        // Google API 호출
-        log.info("📍 google API 호출전");
-        ResponseEntity<String> response = restTemplate.getForEntity(url, String.class);
+        try {
+            log.info("📍 google API 호출전");
+            ResponseEntity<String> response = restTemplate.getForEntity(url, String.class);
+            log.info("📍 google API 호출후");
 
-        log.info("📍 google API 호출후");
-        if (!response.getStatusCode().is2xxSuccessful()) {
-            throw new RuntimeException("Google API 호출 실패");
+            if (!response.getStatusCode().is2xxSuccessful()) {
+                throw new RuntimeException("Google API 호출 실패");
+            }
+
+            LocationDto locationDto = parseLocationFromJson(response.getBody());
+
+            Location saved = new Location(
+                new ObjectId(),
+                loginId,
+                locationDto.getCountry(),
+                locationDto.getState(),
+                locationDto.getCity(),
+                lat, lng
+            );
+            locationRepository.save(saved);
+
+            return locationDto;
+
+        } catch (Exception e) {
+            log.error("❌ 구글 API 호출 실패: {}", e.getMessage(), e);
+            throw new RuntimeException("구글 API 호출 실패", e);
         }
-
-        // JSON 응답 파싱해서 행정 주소 추출
-        LocationDto locationDto = parseLocationFromJson(response.getBody());
-
-        // 파싱된 주소 정보를 MongoDB에 저장
-        Location saved = new Location(
-            new ObjectId(),                         // ID 생성
-            userId,
-            locationDto.getCountry(),               // 국가 코드 (예: KR)
-            locationDto.getState(),                 // 도/광역시
-            locationDto.getCity(),                  // 시/구
-            lat, lng                                 // 사용자의 실제 위도/경도 저장
-        );
-        locationRepository.save(saved); // MongoDB에 저장
-
-        return locationDto; // 프론트에 전달할 DTO 반환
     }
 
-    /**
-     * Google API의 JSON 응답을 파싱해서 국가, 시/도, 시/군/구 정보 추출
-     */
     private LocationDto parseLocationFromJson(String json) {
         try {
             ObjectMapper mapper = new ObjectMapper();
@@ -100,6 +94,4 @@ public class LocationService {
             throw new RuntimeException("Google 응답 파싱 실패", e);
         }
     }
-
-    
 }

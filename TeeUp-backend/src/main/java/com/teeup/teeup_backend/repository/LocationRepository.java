@@ -11,7 +11,7 @@ import com.teeup.teeup_backend.model.Location;
 @Repository
 public interface LocationRepository extends MongoRepository<Location, ObjectId> {
 
-    Optional<Location> findByid(ObjectId id);
+    Optional<Location> findById(ObjectId id);
 
-    Optional<Location> findByUserId(ObjectId userId);
+    Optional<Location> findByLoginId(String loginId);
 }
