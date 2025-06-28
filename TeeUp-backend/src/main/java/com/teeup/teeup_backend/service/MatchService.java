@@ -50,9 +50,9 @@ public class MatchService {
         List<User> allUsers = userRepository.findAll();
 
         return allUsers.stream()
-        .filter(user -> isGenderMatched(user, req.getGender()))
-        .filter(user -> isAgeInRange(user, req.getAgeMin(), req.getAgeMax()))
-        .filter(user -> isLevelMatched(user, req.getLevel()))
+        //.filter(user -> isGenderMatched(user, req.getGender()))
+        //.filter(user -> isAgeInRange(user, req.getAgeMin(), req.getAgeMax()))
+        //.filter(user -> isLevelMatched(user, req.getLevel()))
         // .filter(user -> hasMatchingPurpose(user.getUserId(), req.getPurposeIds()))
         // .filter(user -> isWithinDistance(user.getUserId(), req.getLat(), req.getLng(), req.getRadius()))
         .collect(Collectors.toList());
