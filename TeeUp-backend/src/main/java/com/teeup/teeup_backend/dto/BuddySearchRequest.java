@@ -7,11 +7,13 @@ import lombok.Data;
 
 @Data
 public class BuddySearchRequest {
+    private String nickname;
     private String gender;
     private Integer ageMin;
     private Integer ageMax;
     private List<String> purposeIds;
     private String level;
+    private String area;
     private Double lat;
     private Double lng;
     private Double radius;  //추후 위치기반 검색 예시 반경 5키로내 등등

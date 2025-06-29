@@ -16,7 +16,7 @@ public class Location {
     @Id
     private ObjectId id;
     
-    private ObjectId userId;
+    private String loginId;
 
     private String country;
     private String state;

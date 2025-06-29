@@ -6,7 +6,7 @@ import org.springframework.data.mongodb.repository.MongoRepository;
 import java.util.Optional;
 import java.util.List;
 
-public interface FollowRepository extends MongoRepository<Follow, String> {
+public interface FollowRepository extends MongoRepository<Follow, ObjectId> {
 
     // 특정 사용자가 팔로잉한 목록
     List<Follow> findByFollowerId(String followerId);
