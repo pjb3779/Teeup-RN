@@ -25,7 +25,7 @@ public class User {
     private String gender;
     private int age;
     private String golfLevel;
-    
+    private String area;
     
     private LocalDateTime createdAt = LocalDateTime.now();
 }
