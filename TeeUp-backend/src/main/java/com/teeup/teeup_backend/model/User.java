@@ -27,6 +27,8 @@ public class User {
     private String nickname;
     private int FollowerCount = 0;
     private int FollowingCount = 0;
+    private String area;
+    private LocalDateTime createdAt = LocalDateTime.now();
 
     public String getNickname() {
         return this.nickname;
@@ -34,6 +36,4 @@ public class User {
     public String getId() {
         return this.loginId != null ? this.loginId : null;
     }
-
-    private LocalDateTime createdAt = LocalDateTime.now();
 }
