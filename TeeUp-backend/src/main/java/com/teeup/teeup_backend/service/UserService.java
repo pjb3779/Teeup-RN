@@ -1,7 +1,9 @@
 package com.teeup.teeup_backend.service;
 
-import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
+import java.time.LocalDateTime;
+import java.util.NoSuchElementException;
 
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,13 +25,15 @@ import com.teeup.teeup_backend.model.User;
 import com.teeup.teeup_backend.repository.UserRepository;
 import com.teeup.teeup_backend.dto.UserUpdateProfile;
 import jakarta.validation.constraints.Null;
-
+import com.teeup.teeup_backend.service.S3Service;
+import com.teeup.teeup_backend.service.FollowService;
 // 사용자 관련 핵심 비즈니스 로직 처리 서비스
 @Service
 public class UserService {
 
     @Autowired
     private UserRepository userRepository;
+    private FollowService followService;
 
     private BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder(); //비밀번호 암호황
 
@@ -90,9 +94,12 @@ public class UserService {
 
     private final S3Service s3Service;
     
-    public UserService(UserRepository userRepository, S3Service s3Service) {
+    public UserService(UserRepository userRepository,
+                        S3Service s3Service,
+                        FollowService followService) {
         this.userRepository = userRepository;
         this.s3Service = s3Service;
+        this.followService = followService;
     }
 
     // 회원 아바타 저장 메서드
@@ -107,4 +114,13 @@ public class UserService {
         return avatarUrl;
     }
 
+    public List<User> getFollowers(String loginId){
+        List<String> followerLogins = followService.getFollowerIds(loginId);
+        return userRepository.findByLoginIdIn(followerLogins);
+    }
+
+    public List<User> getFollowees(String loginId) {
+        List<String> followeeLogins = followService.getFollowingIds(loginId);
+        return userRepository.findByLoginIdIn(followeeLogins);
+    }
 }
