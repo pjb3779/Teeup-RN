@@ -18,10 +18,7 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.UUID;
 
-<<<<<<< HEAD
-=======
 import com.teeup.teeup_backend.config.S3config;
->>>>>>> 1e6b5e627413331230e393dd8da9641e9dad8ddb
 import com.teeup.teeup_backend.dto.SignupRequest;
 import com.teeup.teeup_backend.exception.DuplicateLoginIdException;
 import com.teeup.teeup_backend.model.User;
@@ -106,22 +103,6 @@ public class UserService {
     }
 
     // 회원 아바타 저장 메서드
-<<<<<<< HEAD
-    public String storeUserAvatar(String userid, MultipartFile file) throws IOException {
-
-        File dir = new File(uploadDir);
-        if (!dir.exists()) {
-            dir.mkdirs();
-            System.out.println("Dir 생성 완료 !! ");
-        }
-
-        String originFileName = file.getOriginalFilename();
-        String ext = " "; // 확장자명
-        // 확장자 추출
-        if (originFileName != null && originFileName.contains(".")) {
-            ext = originFileName.substring(originFileName.lastIndexOf('.'));
-        }
-=======
     public String storeUserAvatar(String loginId, MultipartFile file) throws IOException {
         // S3Service의 uploadFileToS3 호출
         String avatarUrl = s3Service.uploadFileToS3(file);
@@ -132,21 +113,14 @@ public class UserService {
         userRepository.save(user);
         return avatarUrl;
     }
->>>>>>> 1e6b5e627413331230e393dd8da9641e9dad8ddb
 
     public List<User> getFollowers(String loginId){
         List<String> followerLogins = followService.getFollowerIds(loginId);
         return userRepository.findByLoginIdIn(followerLogins);
     }
 
-<<<<<<< HEAD
-        file.transferTo(new File(filepath));
-
-        return "/uploads/avatars/" + fileName;
-=======
     public List<User> getFollowees(String loginId) {
         List<String> followeeLogins = followService.getFollowingIds(loginId);
         return userRepository.findByLoginIdIn(followeeLogins);
->>>>>>> 1e6b5e627413331230e393dd8da9641e9dad8ddb
     }
 }

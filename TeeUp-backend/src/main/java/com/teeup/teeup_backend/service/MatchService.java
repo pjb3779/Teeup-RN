@@ -47,14 +47,6 @@ public class MatchService {
         List<User> allUsers = userRepository.findAll();
 
         return allUsers.stream()
-<<<<<<< HEAD
-        //.filter(user -> isGenderMatched(user, req.getGender()))
-        //.filter(user -> isAgeInRange(user, req.getAgeMin(), req.getAgeMax()))
-        //.filter(user -> isLevelMatched(user, req.getLevel()))
-        // .filter(user -> hasMatchingPurpose(user.getUserId(), req.getPurposeIds()))
-        // .filter(user -> isWithinDistance(user.getUserId(), req.getLat(), req.getLng(), req.getRadius()))
-        .collect(Collectors.toList());
-=======
             .filter(user -> isGenderMatched(user, req.getGender()))
             .filter(user -> isAgeInRange(user, req.getAgeMin(), req.getAgeMax()))
             .filter(user -> isLevelMatched(user, req.getLevel()))
@@ -63,7 +55,6 @@ public class MatchService {
             // .filter(user -> hasMatchingPurpose(user.getUserId(), req.getPurposeIds()))
             // .filter(user -> isWithinDistance(user.getUserId(), req.getLat(), req.getLng(), req.getRadius()))
             .collect(Collectors.toList());
->>>>>>> 1e6b5e627413331230e393dd8da9641e9dad8ddb
     }
 
     private boolean isGenderMatched(User user, String gender) {
