@@ -35,43 +35,43 @@ public class UserService {
     private UserRepository userRepository;
     private FollowService followService;
 
-    private BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder(); //비밀번호 암호황
+    private BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder(); // 비밀번호 암호황
 
     @Value("${file.upload-dir}")
     private String uploadDir;
 
-    // 회원가입 처리 메서드 
+    // 회원가입 처리 메서드
     public User register(SignupRequest req) {
-            //로그인 아이디 중복 확인
-            if (userRepository.findByLoginId(req.getLoginId()).isPresent()) {
+        // 로그인 아이디 중복 확인
+        if (userRepository.findByLoginId(req.getLoginId()).isPresent()) {
             // 중복 시 예외 던지기 (또는 원하는 에러 처리)
             throw new DuplicateLoginIdException("이미 사용 중인 아이디입니다.");
         }
 
-        //비밀번호 암호화
+        // 비밀번호 암호화
         String encodedPassword = passwordEncoder.encode(req.getPassword());
 
         User user = new User();
         // SignupRequest의 필드를 User 객체로 복사
         BeanUtils.copyProperties(req, user);
         user.setLoginId(req.getLoginId());
-        user.setPassword(encodedPassword);  // 암호화된 비밀번호 저장
+        user.setPassword(encodedPassword); // 암호화된 비밀번호 저장
         user.setCreatedAt(LocalDateTime.now()); // 생성 시간 설정
         return userRepository.save(user); // DB에 저장
     }
 
-    //로그인 처리 메서드
+    // 로그인 처리 메서드
     public Optional<User> login(String loginId, String password) {
-        //userid로 사용자 존재 여부 확인
+        // userid로 사용자 존재 여부 확인
         Optional<User> userOpt = userRepository.findByLoginId(loginId);
-        if(userOpt.isPresent() && passwordEncoder.matches(password, userOpt.get().getPassword())) {
-            return userOpt;  // 비밀번호 일치하면 로그인 성공
+        if (userOpt.isPresent() && passwordEncoder.matches(password, userOpt.get().getPassword())) {
+            return userOpt; // 비밀번호 일치하면 로그인 성공
         }
         return Optional.empty(); // 실패
     }
 
     // 회원 정보 처리 메서드
-    public Optional<User> getUserProfile(String loginId){
+    public Optional<User> getUserProfile(String loginId) {
         return userRepository.findByLoginId(loginId);
     }
 

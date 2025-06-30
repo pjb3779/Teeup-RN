@@ -13,8 +13,7 @@ import java.time.Instant;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-@Document(collection = "follows")
-// 인덱스 정의의 Key와 Value 사이, 작은따옴표 위치를 정확히
+@Document(collection = "follows")       // 팔로우 정보 저장을 위한 MongoDB 컬렉션
 @CompoundIndex(def = "{ 'followerId': 1, 'followeeId': 1 }", unique = true)
 public class Follow {
     // 1) ID 타입을 ObjectId로 변경
