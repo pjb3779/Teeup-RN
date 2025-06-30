@@ -3,6 +3,7 @@ package com.teeup.teeup_backend.controller;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -44,6 +45,22 @@ public class PostController {
         }catch(Exception e){
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body("서버에러");
+        }
+    }
+
+    /* 포스팅 삭제하기 */
+    @DeleteMapping("/delete/{postId}")
+    public ResponseEntity<?> deletePost(
+        @PathVariable String postId
+    ){
+        try{
+            postService.deletePost(postId);
+            Map<String, Object> result = new HashMap<>();
+            result.put("message", "포스팅 삭제 완료!!");
+            return ResponseEntity.ok(result);
+        }catch(Exception e){
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("서버 에러");
         }
     }
 }

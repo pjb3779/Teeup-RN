@@ -1,5 +1,6 @@
 package com.teeup.teeup_backend.service;
 
+import org.bson.types.ObjectId;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -41,5 +42,10 @@ public class PostService{
             saved.getLikesCount(),
             saved.getCommentsCount()
         );
+    }
+    
+    @Transactional
+    public void deletePost(String postId) {
+        postRepository.deleteById(new ObjectId(postId));
     }
 }
