@@ -13,7 +13,11 @@
       "backgroundColor": "#ffffff"
     },
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "com.zoon10.golfapp",
+      "infoPlist": {
+        "ITSAppUsesNonExemptEncryption": false
+      }
     },
     "android": {
       "adaptiveIcon": {
@@ -21,7 +25,6 @@
         "backgroundColor": "#ffffff"
       },
       "edgeToEdgeEnabled": true,
-      "usesCleartextTraffic": true,
       "package": "com.beomi_01.golfapp"
     },
     "web": {
@@ -29,7 +32,7 @@
     },
     "extra": {
       "eas": {
-        "projectId": "615888cf-d746-42f7-bc55-8239dca199b3"
+        "projectId": "348a12aa-3b97-4765-8325-8af2c6aed771"
       }
     }
   }

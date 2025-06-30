@@ -1,6 +1,8 @@
 package com.teeup.teeup_backend.repository;
 
+import java.util.List;              
 import java.util.Optional;
+import java.util.Spliterator.OfPrimitive;
 
 import org.bson.types.ObjectId;
 import org.springframework.data.mongodb.repository.MongoRepository;
@@ -17,4 +19,6 @@ public interface UserRepository extends MongoRepository<User, ObjectId> {
     Optional<User> findByLoginId(String loginId);
 
     Optional<User> findByUserId(ObjectId userId);
+
+    List<User> findByLoginIdIn(List<String> loginIds);
 }

@@ -9,3 +9,7 @@ spring:
 server:
   address: 0.0.0.0
   port: 8080
+
+#프로필 사진 저장
+file: 
+  upload-dir: uploads/avatars

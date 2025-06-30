@@ -5,7 +5,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 
 import Home from './screens/main/HomeScreen';
-import Chat from './screens/main/Chat/ChatScreen';
+import Chat from './screens/main/ChatScreen';
 import Reservation from './screens/main/ReservationScreen';
 import Profile from './screens/main/ProfileScreen';
 

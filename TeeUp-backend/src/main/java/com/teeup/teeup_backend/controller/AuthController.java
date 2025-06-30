@@ -33,7 +33,7 @@ public class AuthController {
     @PostMapping("/signup")
     public ResponseEntity<?> signup(@RequestBody SignupRequest req) {
         userService.register(req);
-        return ResponseEntity.ok("회원가입 성공공");         //성공시 사용자 정보 반환
+        return ResponseEntity.ok("회원가입 성공");         //성공시 사용자 정보 반환
     }
 
     //로그인인

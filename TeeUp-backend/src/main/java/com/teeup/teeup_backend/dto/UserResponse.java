@@ -14,6 +14,7 @@ public class UserResponse {
     private String nickname;
     private String golf_level;
     private String avatar_url;
+    
 
     public UserResponse(User user) {
         this.loginId = user.getLoginId();

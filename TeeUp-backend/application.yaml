@@ -1,0 +1,17 @@
+spring:
+  config:
+    import: optional:application-secret.yaml
+
+  data:
+    mongodb:
+      uri: mongodb://localhost:27017/teeup-db
+
+server:
+  address: 0.0.0.0
+  port: 8080
+
+#프로필 사진 저장
+file: 
+  upload-dir: uploads/avatars
+  
+  secretKey: buaabuaa
