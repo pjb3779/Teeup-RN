@@ -21,8 +21,8 @@ import lombok.RequiredArgsConstructor;
 public class MatchService {
     
     @Autowired
-    private UserRepository userRepository;
-    private LocationRepository locationRepository;
+    private final UserRepository userRepository;
+    private final LocationRepository locationRepository;
     //private PreferenceRepository preferenceRepository;    //구현필요
 
     public List<UserResponse> getRecommendations(String loginId) {
@@ -32,15 +32,12 @@ public class MatchService {
         User user = userOpt.get();
 
         // 기본적으로 모든 유저를 가져오고 (자기 자신 제외)
-        //추후 진짜 추천로직 구현
+        // 추후 진짜 추천로직 구현
         List<User> candidates = userRepository.findAll().stream()
             .filter(u -> !u.getUserId().equals(user.getUserId()))
-            .limit(5)//인원 제한
+            .limit(5)
             .collect(Collectors.toList());
 
-        // 나중에 선호 조건이나 거리 계산을 추가하면 좋음
-
-        // UserResponse로 변환
         return candidates.stream()
                 .map(UserResponse::new)
                 .collect(Collectors.toList());
@@ -50,56 +47,57 @@ public class MatchService {
         List<User> allUsers = userRepository.findAll();
 
         return allUsers.stream()
+<<<<<<< HEAD
         //.filter(user -> isGenderMatched(user, req.getGender()))
         //.filter(user -> isAgeInRange(user, req.getAgeMin(), req.getAgeMax()))
         //.filter(user -> isLevelMatched(user, req.getLevel()))
         // .filter(user -> hasMatchingPurpose(user.getUserId(), req.getPurposeIds()))
         // .filter(user -> isWithinDistance(user.getUserId(), req.getLat(), req.getLng(), req.getRadius()))
         .collect(Collectors.toList());
+=======
+            .filter(user -> isGenderMatched(user, req.getGender()))
+            .filter(user -> isAgeInRange(user, req.getAgeMin(), req.getAgeMax()))
+            .filter(user -> isLevelMatched(user, req.getLevel()))
+            .filter(user -> isNicknameMatched(user, req.getNickname()))
+            .filter(user -> isAreaMatched(user, req.getArea()))
+            // .filter(user -> hasMatchingPurpose(user.getUserId(), req.getPurposeIds()))
+            // .filter(user -> isWithinDistance(user.getUserId(), req.getLat(), req.getLng(), req.getRadius()))
+            .collect(Collectors.toList());
+>>>>>>> 1e6b5e627413331230e393dd8da9641e9dad8ddb
     }
 
-    // private boolean hasMatchingPurpose(ObjectId userId, List<String> reqPurposeIds) {
-    //     List<ObjectId> userPurposeIds = preferencePurposeRepository.findPurposeIdsByUserId(userId);
-    //     return userPurposeIds.stream()
-    //             .map(ObjectId::toHexString)
-    //             .anyMatch(reqPurposeIds::contains);
-    // }
-
-    // private boolean isWithinDistance(ObjectId userId, double lat, double lng, double radiusKm) {
-    //     Location loc = LocationRepository.findByUserId(userId);
-    //     if (loc == null) return false;
-    //     return DistanceUtil.calculateDistance(lat, lng, loc.getLat(), loc.getLng()) <= radiusKm;
-    // }
     private boolean isGenderMatched(User user, String gender) {
         return gender == null || gender.isBlank() || gender.equals(user.getGender());
     }
 
     private boolean isAgeInRange(User user, Integer min, Integer max) {
-        if (min == null || max == null) return true;
+        if (min == null && max == null) return true;
+
         int age = user.getAge();
-        return age >= min && age <= max;
+
+        if (min != null && age < min) return false;
+        if (max != null && age > max) return false;
+
+        return true;
     }
 
     private boolean isLevelMatched(User user, String level) {
         return level == null || level.isBlank() || level.equals(user.getGolfLevel());
     }
 
-    // private boolean hasMatchingPurpose(ObjectId userId, List<String> targetPurposeIds) {
-    //     if (targetPurposeIds == null || targetPurposeIds.isEmpty()) return true;
+    private boolean isNicknameMatched(User user, String nickname) {
+        return nickname == null 
+            || nickname.isBlank()
+            || (user.getNickname() != null && user.getNickname().contains(nickname));
+    }
 
-    //     List<ObjectId> userPurposeIds = preferencePurposeRepository.findPurposeIdsByUserId(userId);
-    //     return userPurposeIds.stream()
-    //         .map(ObjectId::toHexString)
-    //         .anyMatch(targetPurposeIds::contains);
-    // }
+    private boolean isAreaMatched(User user, String area) {
+        return area == null 
+            || area.isBlank()
+            || (user.getArea() != null && user.getArea().contains(area));
+    }
 
-    // private boolean isWithinDistance(ObjectId userId, Double lat, Double lng, Double radiusKm) {
-    //     if (lat == null || lng == null || radiusKm == null) return true;
+    // private boolean hasMatchingPurpose(ObjectId userId, List<String> reqPurposeIds) { ... }
 
-    //     Location loc = locationRepository.findById(userId);
-    //     if (loc == null) return false;
-
-    //     return DistanceUtil.calculateDistance(lat, lng, loc.getLat(), loc.getLng()) <= radiusKm;
-    // }
-
-}  
+    // private boolean isWithinDistance(ObjectId userId, double lat, double lng, double radiusKm) { ... }
+}

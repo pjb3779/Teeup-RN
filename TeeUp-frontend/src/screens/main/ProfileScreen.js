@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { View, Text, StyleSheet, ActivityIndicator, Image, TouchableOpacity } from 'react-native';
 import { getUserProfile } from '../../services/userService';
 import { useNavigation, useFocusEffect } from '@react-navigation/native';  
@@ -28,6 +28,16 @@ export default function Profile() {
     }, [])
   );
 
+  useEffect( () => {
+    const timeout = setTimeout(() => {
+      if (loading){
+        setError('정보 불러오기 실패');
+        setLoading(false);
+      }
+    }, 3000);
+
+    return () => clearTimeout(timeout);
+  }, [loading]);
 
   if (loading) {
     return (
@@ -56,23 +66,23 @@ export default function Profile() {
         {profile.avatar && (
           <Image source={{ uri: profile.avatar }} style={styles.avatar} />
         )}
-        <Text style={styles.nickname}>{profile.nickname}</Text>
+        <Text style={styles.nickname}>{profile?.nickname || 'None'}</Text>
       </View>
       
       <View style={styles.infoContainer}>
         <View style={styles.infoItem}>
-          <Text style={styles.infoLabel}>성별</Text>
-          <Text style={styles.infoValue}>{profile.gender}</Text>
+          <Text style={styles.infoLabel}>Gender</Text>
+          <Text style={styles.infoValue}>{profile?.gender || 'None'}</Text>
         </View>
         
         <View style={styles.infoItem}>
-          <Text style={styles.infoLabel}>나이</Text>
-          <Text style={styles.infoValue}>{profile.age}</Text>
+          <Text style={styles.infoLabel}>Age</Text>
+          <Text style={styles.infoValue}>{profile?.age || 'None'}</Text>
         </View>
         
         <View style={styles.infoItem}>
-          <Text style={styles.infoLabel}>골프 레벨</Text>
-          <Text style={styles.infoValue}>{profile.golfLevel}</Text>
+          <Text style={styles.infoLabel}>Golf Level</Text>
+          <Text style={styles.infoValue}>{profile?.golfLevel || 'None'}</Text>
         </View>
 
         <TouchableOpacity style={styles.editButton} onPress={handleEditProfile}>

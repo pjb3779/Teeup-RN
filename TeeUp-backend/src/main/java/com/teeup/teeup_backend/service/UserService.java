@@ -1,7 +1,9 @@
 package com.teeup.teeup_backend.service;
 
-import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
+import java.time.LocalDateTime;
+import java.util.NoSuchElementException;
 
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,19 +18,25 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.UUID;
 
+<<<<<<< HEAD
+=======
+import com.teeup.teeup_backend.config.S3config;
+>>>>>>> 1e6b5e627413331230e393dd8da9641e9dad8ddb
 import com.teeup.teeup_backend.dto.SignupRequest;
 import com.teeup.teeup_backend.exception.DuplicateLoginIdException;
 import com.teeup.teeup_backend.model.User;
 import com.teeup.teeup_backend.repository.UserRepository;
 import com.teeup.teeup_backend.dto.UserUpdateProfile;
 import jakarta.validation.constraints.Null;
-
+import com.teeup.teeup_backend.service.S3Service;
+import com.teeup.teeup_backend.service.FollowService;
 // 사용자 관련 핵심 비즈니스 로직 처리 서비스
 @Service
 public class UserService {
 
     @Autowired
     private UserRepository userRepository;
+    private FollowService followService;
 
     private BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder(); // 비밀번호 암호황
 
@@ -87,7 +95,18 @@ public class UserService {
         return updateUser;
     }
 
+    private final S3Service s3Service;
+    
+    public UserService(UserRepository userRepository,
+                        S3Service s3Service,
+                        FollowService followService) {
+        this.userRepository = userRepository;
+        this.s3Service = s3Service;
+        this.followService = followService;
+    }
+
     // 회원 아바타 저장 메서드
+<<<<<<< HEAD
     public String storeUserAvatar(String userid, MultipartFile file) throws IOException {
 
         File dir = new File(uploadDir);
@@ -102,14 +121,32 @@ public class UserService {
         if (originFileName != null && originFileName.contains(".")) {
             ext = originFileName.substring(originFileName.lastIndexOf('.'));
         }
+=======
+    public String storeUserAvatar(String loginId, MultipartFile file) throws IOException {
+        // S3Service의 uploadFileToS3 호출
+        String avatarUrl = s3Service.uploadFileToS3(file);
 
-        // UUID로 새파일명 생성
-        String fileName = UUID.randomUUID().toString() + ext;
-        // 새로운 파일 경로 생성
-        String filepath = Paths.get(uploadDir).resolve(fileName).toString();
+        User user = userRepository.findByLoginId(loginId)
+            .orElseThrow(() -> new RuntimeException("사용자를 찾을 수 없습니다."));
+        user.setAvatarUrl(avatarUrl);
+        userRepository.save(user);
+        return avatarUrl;
+    }
+>>>>>>> 1e6b5e627413331230e393dd8da9641e9dad8ddb
 
+    public List<User> getFollowers(String loginId){
+        List<String> followerLogins = followService.getFollowerIds(loginId);
+        return userRepository.findByLoginIdIn(followerLogins);
+    }
+
+<<<<<<< HEAD
         file.transferTo(new File(filepath));
 
         return "/uploads/avatars/" + fileName;
+=======
+    public List<User> getFollowees(String loginId) {
+        List<String> followeeLogins = followService.getFollowingIds(loginId);
+        return userRepository.findByLoginIdIn(followeeLogins);
+>>>>>>> 1e6b5e627413331230e393dd8da9641e9dad8ddb
     }
 }
