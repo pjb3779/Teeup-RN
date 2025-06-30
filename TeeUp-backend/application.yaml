@@ -4,7 +4,7 @@ spring:
 
   data:
     mongodb:
-      uri: mongodb+srv://NiceOnTest:<db_password>@niceoncluster0.bbgx89l.mongodb.net/?retryWrites=true&w=majority&appName=NiceOnCluster0
+      uri: mongodb://localhost:27017/teeup-db
 
 server:
   address: 0.0.0.0
@@ -13,5 +13,5 @@ server:
 #프로필 사진 저장
 file: 
   upload-dir: uploads/avatars
-jwt:
+  
   secretKey: buaabuaa
