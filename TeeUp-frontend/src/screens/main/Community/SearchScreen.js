@@ -7,33 +7,37 @@ import {
   FlatList,
   Image,
   TouchableOpacity,
-  Alert,           // ← 여기 추가
+  Alert,           
 } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import api from '../../../api';
 
 export default function SearchScreen({ navigation }) {
-  const [recommendations, setRecommendations] = useState([]);
+    const [recommendations, setRecommendations] = useState([]);
+    const [myLoginId, setMyLoginId] = useState('');
 
-  useEffect(() => {
-    const fetchCommunityRecommendations = async (limit = 10) => {
-      try {
-        const response = await api.get('/api/community/recommendations', {
-          params: { limit },
-        });
-        setRecommendations(response.data);
-      } catch (err) {
-        console.error('추천 데이터 로드 실패:', err);
-      }
-    };
-    fetchCommunityRecommendations(10);
-  }, []);
+    useEffect(() => {
+        (async () => {
+        const stored = await AsyncStorage.getItem('loginId');
+        if (stored) setMyLoginId(stored);
+        })();
+
+        (async () => {
+        try {
+            const res = await api.get('/api/community/recommendations', {
+            params: { limit: 10 }
+            });
+            setRecommendations(res.data);
+        } catch (e) {
+            console.error('추천 로드 실패', e);
+        }
+        })();
+    }, []);
 
     // 팔로우 요청 함수
     const handleFollow = async (followeeLoginId) => {
     try {
-
-        const myloginId = loginId;
+        console.log('▶ 내 로그인ID:', myLoginId);
         await api.post(
             `/api/follows/${followeeLoginId}`,
             {},
