@@ -4,7 +4,7 @@ spring:
 
   data:
     mongodb:
-      uri: mongodb://localhost:27017/teeup-db
+      uri: mongodb://${mongodb.username}:${mongodb.password}@ac-fntwfxt-shard-00-00.bbgx89l.mongodb.net:27017,ac-fntwfxt-shard-00-01.bbgx89l.mongodb.net:27017,ac-fntwfxt-shard-00-02.bbgx89l.mongodb.net:27017/teeup-db?ssl=true&replicaSet=atlas-owjper-shard-0&authSource=admin&retryWrites=true&w=majority
 
 server:
   address: 0.0.0.0
