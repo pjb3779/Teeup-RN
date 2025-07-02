@@ -122,6 +122,11 @@
 			<artifactId>aws-java-sdk-s3</artifactId>
         	<version>1.12.785</version> 
 		</dependency>
+		<!-- 날짜 직렬화 -->
+		<dependency>
+			<groupId>com.fasterxml.jackson.datatype</groupId>
+			<artifactId>jackson-datatype-jsr310</artifactId>
+		</dependency>
 	</dependencies>
 
 	<build>
