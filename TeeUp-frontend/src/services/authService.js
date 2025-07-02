@@ -29,7 +29,7 @@ export const login = async (userid, password) => {
 // 회원가입 요청
 export const signup = async ({ userid, password, nickname }) => {
   console.log('회원가입 요청 시도');
-  console.log('BASE_URL:', API_BASE_URL);
+  console.log('회원가입 BASE_URL:', API_BASE_URL);
 
   try {
     const response = await axios.post(`${API_BASE_URL}/api/auth/signup`, {
