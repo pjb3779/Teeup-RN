@@ -32,9 +32,22 @@ public class AuthController {
     //회원가입 API 엔드포인트
     @PostMapping("/signup")
     public ResponseEntity<?> signup(@RequestBody SignupRequest req) {
-        userService.register(req);
-        return ResponseEntity.ok("회원가입 성공");         //성공시 사용자 정보 반환
+        log.info("🚀 [AuthController] 회원가입 요청 도착");
+        log.info("▶️ 받은 요청 값: {}", req);
+
+        try {
+            userService.register(req);
+        } catch (Exception e) {
+            log.error("❌ [AuthController] 회원가입 중 예외 발생: {}", e.getMessage(), e);
+            return ResponseEntity
+                    .status(500)
+                    .body("회원가입 실패: " + e.getMessage());
+        }
+
+        log.info("✅ [AuthController] 회원가입 성공");
+        return ResponseEntity.ok("회원가입 성공");
     }
+
 
     //로그인인
     @PostMapping("/login")
