@@ -3,8 +3,8 @@ package com.teeup.teeup_backend.service;
 import java.util.List;
 import java.util.Optional;
 import java.time.LocalDateTime;
-import java.util.NoSuchElementException;
-
+import java.util.Collections;
+import java.util.stream.Collectors;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -19,6 +19,7 @@ import java.nio.file.Paths;
 import java.util.UUID;
 
 import com.teeup.teeup_backend.config.S3config;
+import com.teeup.teeup_backend.dto.CommunityUserResponse;
 import com.teeup.teeup_backend.dto.SignupRequest;
 import com.teeup.teeup_backend.exception.DuplicateLoginIdException;
 import com.teeup.teeup_backend.model.User;
@@ -122,5 +123,14 @@ public class UserService {
     public List<User> getFollowees(String loginId) {
         List<String> followeeLogins = followService.getFollowingIds(loginId);
         return userRepository.findByLoginIdIn(followeeLogins);
+    }
+
+    public List<CommunityUserResponse> getRandomCommunityUsers(int limit) {
+        List<User> users = userRepository.findAll();
+        Collections.shuffle(users);
+        return users.stream()
+                    .limit(limit)
+                    .map(CommunityUserResponse::new)
+                    .collect(Collectors.toList());
     }
 }

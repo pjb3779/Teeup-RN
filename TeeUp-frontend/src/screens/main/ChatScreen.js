@@ -10,12 +10,15 @@ export default function Chatting() {
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: 'center',
+  headerMenu: {
+    marginTop: 20,
     alignItems: 'center',
   },
-  text: {
+  titleText: {
+    color: '#1D7C3E',
+    fontFamily: 'SF Pro',
     fontSize: 20,
+    fontWeight: '600',
+    marginTop: 50,
   },
 });

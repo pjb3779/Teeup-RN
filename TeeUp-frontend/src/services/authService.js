@@ -29,7 +29,7 @@ export const login = async (loginId, password) => {
 // 회원가입 요청
 export const signup = async ({ loginId, password }) => {
   console.log('회원가입 요청 시도');
-  console.log('BASE_URL:', API_BASE_URL);
+  console.log('회원가입 BASE_URL:', API_BASE_URL);
   console.log('회원가입 URL:', `${API_BASE_URL}/api/auth/signup`);
   console.log('회원가입 데이터:', { loginId, password });
 
