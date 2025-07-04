@@ -11,8 +11,8 @@ export default function MainTabNavigator() {
   return (
     <Tab.Navigator screenOptions={{ headerShown: false }}>
       <Tab.Screen name="Home" component={HomeScreen} />
-      <Tab.Screen name="Chat" component={ChatScreen} />
-      <Tab.Screen name="Reservation" component={ReservationScreen} />
+      <Tab.Screen name="Chat" component={ChatStackNavigator} />
+      <Tab.Screen name="Reservation" component={CommunityStackNavigator} />
       <Tab.Screen name="Profile" component={ProfileScreen} />
     </Tab.Navigator>
   );
