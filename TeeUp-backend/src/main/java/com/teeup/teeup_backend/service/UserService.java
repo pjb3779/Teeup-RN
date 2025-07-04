@@ -1,33 +1,25 @@
 package com.teeup.teeup_backend.service;
 
-import java.util.List;
-import java.util.Optional;
+import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.Collections;
+import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
+
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.multipart.MultipartFile;
-import java.io.File;
-import java.io.IOException;
-import java.lang.reflect.Field;
-import java.nio.file.Files;
-import java.nio.file.Paths;
-import java.util.UUID;
 
-import com.teeup.teeup_backend.config.S3config;
 import com.teeup.teeup_backend.dto.CommunityUserResponse;
 import com.teeup.teeup_backend.dto.SignupRequest;
+import com.teeup.teeup_backend.dto.UserUpdateProfile;
 import com.teeup.teeup_backend.exception.DuplicateLoginIdException;
 import com.teeup.teeup_backend.model.User;
 import com.teeup.teeup_backend.repository.UserRepository;
-import com.teeup.teeup_backend.dto.UserUpdateProfile;
-import jakarta.validation.constraints.Null;
-import com.teeup.teeup_backend.service.S3Service;
-import com.teeup.teeup_backend.service.FollowService;
 // 사용자 관련 핵심 비즈니스 로직 처리 서비스
 @Service
 public class UserService {
@@ -57,6 +49,7 @@ public class UserService {
         BeanUtils.copyProperties(req, user);
         user.setLoginId(req.getLoginId());
         user.setPassword(encodedPassword); // 암호화된 비밀번호 저장
+        user.setEmail(req.getEmail());
         user.setCreatedAt(LocalDateTime.now()); // 생성 시간 설정
         return userRepository.save(user); // DB에 저장
     }
