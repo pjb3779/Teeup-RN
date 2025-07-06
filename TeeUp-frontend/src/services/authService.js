@@ -4,8 +4,10 @@ import { API_BASE_URL } from '@env'; // 스프링 서버의 URL을 적어주세�
 
 //로그인 요청
 export const login = async (loginId, password) => {
+export const login = async (loginId, password) => {
   try {
     const response = await axios.post(`${API_BASE_URL}/api/auth/login`, {
+      loginId,
       loginId,
       password,
     });
@@ -14,6 +16,7 @@ export const login = async (loginId, password) => {
 
     try {
       await AsyncStorage.setItem('userToken', token);
+      await AsyncStorage.setItem('loginId', user.loginId);
       console.log('토큰 저장 성공:', token);
     } catch (e) {
       console.error('❌ 토큰 저장 실패:', e);
@@ -35,6 +38,7 @@ export const signup = async ({ loginId, password }) => {
 
   try {
     const response = await axios.post(`${API_BASE_URL}/api/auth/signup`, {
+      loginId,
       loginId,
       password,
     });
