@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { View, Text, TextInput, StyleSheet, TouchableOpacity, Alert } from 'react-native';
-import { updateUserProfile } from '../../services/userService'; 
+import { updateUserProfile } from '../../../services/userService'; 
 
 export default function EditProfileScreen({ route, navigation }) {
     const { profile } = route.params;       // 프로필 속 데이터 꺼내오기
