@@ -28,7 +28,10 @@ export default function CommunityScreen({navigation}) {
         </View>
 
         {/* edit 아이콘 */}
-        <TouchableOpacity style={styles.editButton}>
+        <TouchableOpacity 
+          style={styles.editButton}
+          onPress={() => navigation.navigate('NewPostScreen')}
+        >
           <Icon name="edit" size={24} color="#1D7C3E" />
         </TouchableOpacity>
       </View>

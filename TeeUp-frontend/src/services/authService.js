@@ -4,10 +4,8 @@ import { API_BASE_URL } from '@env'; // 스프링 서버의 URL을 적어주세�
 
 //로그인 요청
 export const login = async (loginId, password) => {
-export const login = async (loginId, password) => {
   try {
     const response = await axios.post(`${API_BASE_URL}/api/auth/login`, {
-      loginId,
       loginId,
       password,
     });
@@ -38,7 +36,6 @@ export const signup = async ({ loginId, password }) => {
 
   try {
     const response = await axios.post(`${API_BASE_URL}/api/auth/signup`, {
-      loginId,
       loginId,
       password,
     });
