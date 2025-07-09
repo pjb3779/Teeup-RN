@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { View, Text, StyleSheet, ActivityIndicator, Image, TouchableOpacity } from 'react-native';
-import { getUserProfile } from '../../services/userService';
+import { getUserProfile } from '../../../services/userService';
 import { useNavigation, useFocusEffect } from '@react-navigation/native';  
 
 export default function Profile() {

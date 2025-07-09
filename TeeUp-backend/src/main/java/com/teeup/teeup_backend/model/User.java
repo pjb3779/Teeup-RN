@@ -21,6 +21,7 @@ public class User {
     private String loginId;      //로그인 아이디
     private String password;    //로그인 비밀번호
     private String avatarUrl;
+    private String Email;
     private String gender;
     private int age;
     private String golfLevel;
@@ -30,9 +31,6 @@ public class User {
     private String area;
     private LocalDateTime createdAt = LocalDateTime.now();
 
-    public String getNickname() {
-        return this.nickname;
-    }
     public String getId() {
         return this.loginId != null ? this.loginId : null;
     }

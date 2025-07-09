@@ -1,6 +1,7 @@
 package com.teeup.teeup_backend.websocket;
 
 import java.net.URI;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
@@ -31,15 +32,20 @@ public class ChatWebSocketHandler extends TextWebSocketHandler {
 
     @Autowired
     private ChatService chatService;
-
-    // userId → WebSocketSession 저장용 (추후 로그인 연동 후 userId 확보 필요)
+    /**
+     * loginId → WebSocketSession 저장용
+     * (추후 로그인 연동 후 loginId 확보 필요)
+     */
     private final Map<String, WebSocketSession> sessions = new ConcurrentHashMap<>();
 
-    // sessionId → userId 저장 (종료 시 매핑 해제용)
-    private final Map<String, String> sessionIdToUserId = new ConcurrentHashMap<>();
+    /**
+     * sessionId → loginId 저장
+     * (연결 종료 시 매핑 해제용)
+     */
+    private final Map<String, String> sessionIdToLoginId = new ConcurrentHashMap<>();
 
-    // 클래스 내 필드로 ObjectMapper 선언
-    private final ObjectMapper objectMapper = new ObjectMapper();
+    @Autowired
+    private ObjectMapper objectMapper;
 
     /**
      * 클라이언트와 연결이 성공하면 호출되는 콜백
@@ -47,28 +53,38 @@ public class ChatWebSocketHandler extends TextWebSocketHandler {
      */
     @Override
     public void afterConnectionEstablished(WebSocketSession session) throws Exception {
-        log.info("📍 새 WebSocket 연결: " + session.getId());
+        log.info("📍 새 WebSocket 연결: {}", session.getId());
 
-        //웹 소켓 연결 시 URI 쿼리에서 userId추출출 
+        // 웹 소켓 연결 시 URI 쿼리에서 loginId 추출
         URI uri = session.getUri();
-        String userId = null;
+        String loginId = null;
+        String roomId = null;
+
         if (uri != null && uri.getQuery() != null) {
             Map<String, String> queryParams = parseQueryParams(uri.getQuery());
-            userId = queryParams.get("userId");
+            loginId = queryParams.get("loginId");
+            roomId = queryParams.get("roomId");
         }
 
-        if (userId == null || userId.isEmpty()) {
-            // userId 없으면 연결 종료 처리 (또는 예외 발생)
+        if (loginId == null || loginId.isEmpty()) {
             session.close();
-            log.warn("userId 누락으로 연결 종료 - 세션ID: " + session.getId());
+            log.warn("loginId 누락으로 연결 종료 - 세션ID: {}", session.getId());
             return;
         }
-        
-        //userId를 key로 세션 저장
-        sessions.put(userId, session);
-        sessionIdToUserId.put(session.getId(), userId);
 
-        log.info("유저 연결됨: userId={}, sessionId={}", userId, session.getId());
+        // loginId를 key로 세션 저장
+        sessions.put(loginId, session);
+        sessionIdToLoginId.put(session.getId(), loginId);
+
+        log.info("✅ 유저 연결됨: loginId={}, sessionId={}", loginId, session.getId());
+
+        // ✅ roomId가 있으면 미수신 메시지 내려주기
+        if (roomId != null && !roomId.isEmpty()) {
+            List<Message> pendingMessages = chatService.findMessagesForUser(loginId, roomId);
+            for (Message m : pendingMessages) {
+                session.sendMessage(new TextMessage(objectMapper.writeValueAsString(m)));
+            }
+        }
     }
 
     /**
@@ -78,22 +94,24 @@ public class ChatWebSocketHandler extends TextWebSocketHandler {
     @Override
     protected void handleTextMessage(WebSocketSession session, TextMessage message) throws Exception {
         String payload = message.getPayload();
-        log.info("📍 메시지 수신: " + payload);
+        log.info("📍 메시지 수신: {}", payload);
 
+        // JSON → ChatMessageDto 변환
         ChatMessageDto chatMessage = objectMapper.readValue(payload, ChatMessageDto.class);
 
         // DB 저장
         Message savedMessage = chatService.saveMessage(chatMessage);
 
+        // 수신자 loginId로 세션 찾아 전송
         WebSocketSession receiverSession = sessions.get(chatMessage.getReceiverId());
 
         if (receiverSession != null && receiverSession.isOpen()) {
             receiverSession.sendMessage(new TextMessage(objectMapper.writeValueAsString(savedMessage)));
         } else {
-            log.warn("수신자 세션 없음 or 닫힘: userId={}", chatMessage.getReceiverId());
+            log.warn("수신자 세션 없음 또는 닫힘: loginId={}", chatMessage.getReceiverId());
         }
 
-        //발신자에게도 메시지 전송 (본인 화면 업데이트용)
+        // 발신자에게도 메시지 전송 (본인 화면 업데이트용)
         if (session.isOpen()) {
             session.sendMessage(new TextMessage(objectMapper.writeValueAsString(savedMessage)));
         }
@@ -106,12 +124,12 @@ public class ChatWebSocketHandler extends TextWebSocketHandler {
     @Override
     public void afterConnectionClosed(WebSocketSession session, CloseStatus status) throws Exception {
         String sessionId = session.getId();
-        String userId = sessionIdToUserId.get(sessionId);
+        String loginId = sessionIdToLoginId.get(sessionId);
 
-        if(userId != null) {
-            sessions.remove(userId);
-            sessionIdToUserId.remove(sessionId);
-            log.info("📍유저 연결 종료: userId={}, sessionId={}", userId, sessionId);
+        if (loginId != null) {
+            sessions.remove(loginId);
+            sessionIdToLoginId.remove(sessionId);
+            log.info("📍 유저 연결 종료: loginId={}, sessionId={}", loginId, sessionId);
         }
     }
 

@@ -5,6 +5,7 @@ import java.time.LocalDateTime;
 import org.bson.types.ObjectId;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
+import org.springframework.data.mongodb.core.mapping.Field;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -21,7 +22,9 @@ public class Message {
     private ObjectId id;
 
     private ObjectId roomId;       // 채팅방 ID (참조용)
-    private ObjectId senderId;     // 메시지 발신자 ID
+    @Field("senderId")
+    private String senderId;     // 메시지 발신자 ID
+    private String receiverId;      // 메시지 수신자 ID
     private String content;        // 메시지 내용
     private String type;           // 메시지 타입 (TEXT, IMAGE, etc.)
     private LocalDateTime timestamp; // 메시지 전송 시간
