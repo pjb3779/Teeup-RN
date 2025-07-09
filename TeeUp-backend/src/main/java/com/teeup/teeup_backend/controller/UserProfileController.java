@@ -38,9 +38,12 @@ public class UserProfileController {
     }
 
     @GetMapping
-    public ResponseEntity<?> getProfile(String loginId) {
+    public ResponseEntity<?> getProfile(
+        @RequestHeader("loginId") String loginId
+    ) {
         try {
             Optional<User> userOpt = userRepository.findByLoginId(loginId);
+            System.out.println("\n\nloginId: " + loginId);
             if (userOpt.isPresent()) {
                 User user = userOpt.get();
                 UserProfileResponse profile = new UserProfileResponse(
@@ -61,7 +64,10 @@ public class UserProfileController {
     }
 
     @PutMapping("/edit")
-    public ResponseEntity<?> updateProfile(String loginId, @RequestBody @Valid UserUpdateProfile dto) {
+    public ResponseEntity<?> updateProfile(
+        @RequestHeader("loginId") String loginId, 
+        @RequestBody @Valid UserUpdateProfile dto
+    ) {
         try {
             User updated = userService.updateUserProfile(loginId, dto);
             UserUpdateProfile updatedProfile = new UserUpdateProfile();
