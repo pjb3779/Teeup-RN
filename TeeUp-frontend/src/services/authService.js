@@ -14,6 +14,7 @@ export const login = async (loginId, password) => {
 
     try {
       await AsyncStorage.setItem('userToken', token);
+      await AsyncStorage.setItem('loginId', user.loginId);
       console.log('토큰 저장 성공:', token);
     } catch (e) {
       console.error('❌ 토큰 저장 실패:', e);
@@ -29,7 +30,7 @@ export const login = async (loginId, password) => {
 // 회원가입 요청
 export const signup = async ({ loginId, password }) => {
   console.log('회원가입 요청 시도');
-  console.log('BASE_URL:', API_BASE_URL);
+  console.log('회원가입 BASE_URL:', API_BASE_URL);
   console.log('회원가입 URL:', `${API_BASE_URL}/api/auth/signup`);
   console.log('회원가입 데이터:', { loginId, password });
 

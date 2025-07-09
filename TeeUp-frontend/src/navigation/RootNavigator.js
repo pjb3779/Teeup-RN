@@ -3,8 +3,9 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import SplashScreen from '../screens/SplashScreen'; // 로그인, 회원가입 화면 포함
 import LoginScreen from '../screens/auth/LoginScreen'; // 로그인 화면
 import SignUpScreen from '../screens/auth/SignUpScreen'; // 회원가입 화면
+import VertifyScreen from '../screens/auth/VertifyScreen'; // 회원가입 화면
 import MainTabNavigator from './MainTabNavigator'; // 로그인 후 메인 화면
-import EditProfileScreen from '../screens/main/EditProfileScreen';
+import EditProfileScreen from '../screens/main/Profile/EditProfileScreen';
 const Stack = createNativeStackNavigator();
 
 export default function RootNavigator() {
@@ -25,6 +26,7 @@ export default function RootNavigator() {
           )}
         </Stack.Screen>
         <Stack.Screen name="SignUp" component={SignUpScreen} />
+        <Stack.Screen name="Vertify" component={VertifyScreen} />
       </>
     ) : (
       <>

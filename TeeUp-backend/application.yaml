@@ -11,7 +11,5 @@ server:
   port: 8080
 
 #프로필 사진 저장
-file: 
+file:
   upload-dir: uploads/avatars
-jwt:
-  secretKey: buaabuaa
