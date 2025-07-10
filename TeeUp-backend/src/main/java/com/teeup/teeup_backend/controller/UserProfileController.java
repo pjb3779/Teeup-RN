@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.teeup.teeup_backend.dto.AvatarResponse;
 import com.teeup.teeup_backend.dto.UserProfileResponse;
 import com.teeup.teeup_backend.dto.UserUpdateProfile;
 import com.teeup.teeup_backend.model.User;
@@ -84,8 +85,10 @@ public class UserProfileController {
     }
 
     @PostMapping("/avatar")
-    public ResponseEntity<?> uploadAvatar(@RequestHeader("loginId") String loginId, @RequestParam("file") MultipartFile file) {
-
+    public ResponseEntity<?> uploadAvatar(
+        @RequestHeader("loginId") String loginId, 
+        @RequestParam("file") MultipartFile file
+    ) {
         System.out.println("\n\n\n\nAvatar upload requested for loginId: " + loginId);
 
         try {
@@ -97,5 +100,13 @@ public class UserProfileController {
             e.printStackTrace();
             return ResponseEntity.status(500).body("아바타 업로드 실패");
         }
+    }
+
+    @GetMapping("/avatar/get")
+    public ResponseEntity<AvatarResponse> fetchAvatar(
+        @RequestHeader("loginId") String loginId
+    ){
+        String url = userService.getAvatarUrl(loginId);
+        return ResponseEntity.ok(new AvatarResponse(url));
     }
 }
