@@ -1,45 +1,63 @@
-import React, { useEffect, useState } from 'react';
-import { View, Text, StyleSheet, FlatList, TouchableOpacity, ActivityIndicator } from 'react-native';
-import * as Location from 'expo-location'; 
-import { fetchBuddyRecommendations } from '../../../services/matchService'; // 추천 API 함수
-import { fetchNearestLocation } from '../../../services/locationService'; // 추가: 위치 API 함수
+import React from 'react';
+import { SafeAreaView, View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import useUserStore from '../../../store/userStore';
-import useLocationManager from './useLocationManager';
+import useLocationManager from '../../../hooks/useLocationManager';
+import useBuddyRecommendations from '../../../hooks/useBuddyRecommendations';
+import Header from './Header';
+import LocationView from './LocationView';
+import SearchView from './SearchView';
 import BuddyList from './BuddyList';
 
 export default function HomeScreen() {
   const { user } = useUserStore();
-
   const { location, loading: locationLoading } = useLocationManager(user.loginId);
-  const { buddies, loading: buddiesLoading } = fetchBuddyRecommendations(user.loginId);
+  const { buddies, loading: buddiesLoading } = useBuddyRecommendations(user.loginId);
 
   return (
-    <View style={styles.container}>
-      <Text style={styles.title}>📍 현재 위치</Text>
+    <SafeAreaView style={styles.safeArea}>
+      <Header />
+      <View style={styles.sectionSpacing} />
+
       <LocationView location={location} loading={locationLoading} />
+      <View style={styles.sectionSpacingLocation} />
 
-      <Text style={styles.title}>🧑‍🤝‍🧑 추천 버디</Text>
+      <SearchView />
+      <View style={styles.sectionSpacingSearch} />
+
+      <Text style={styles.Buddytext}>Recommended Buddy</Text>
+      <View style={styles.sectionSpacingBuddyList} />
+
       <BuddyList buddies={buddies} loading={buddiesLoading} />
-
-      <TouchableOpacity style={styles.button}>
-        <Text style={styles.buttonText}>전체 버디 찾기</Text>
-      </TouchableOpacity>
-    </View>
+    </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
+  safeArea: {
     flex: 1,
-    padding: 20,
+    backgroundColor: '#FFFFFF',
+    paddingHorizontal: 20,
   },
-  title: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    marginTop: 16,
+  sectionSpacing: {
+    height: 10,
+  },
+  sectionSpacingLocation: {
+    height: 5,
+  },
+  sectionSpacingSearch: {
+    height: 9,
+  },
+  sectionSpacingBuddyList: {
+    height: 0,
+  },
+  Buddytext: {
+    fontSize: 20,
+    fontWeight: '700',
+    fontFamily: 'Plus Jakarta Sans',
+    color: '#201913',
   },
   button: {
-    marginTop: 24,
+    marginTop: 39,
     backgroundColor: '#007AFF',
     padding: 14,
     borderRadius: 10,

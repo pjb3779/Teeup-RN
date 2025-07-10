@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import * as Location from 'expo-location';
-import { fetchNearestLocation } from '../../../services/locationService';
+import { fetchNearestLocation } from '../services/locationService';
 
 export default function useLocationManager(loginId) {
   const [location, setLocation] = useState(null);
