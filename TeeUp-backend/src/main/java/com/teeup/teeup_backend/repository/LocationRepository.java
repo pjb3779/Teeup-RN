@@ -14,4 +14,14 @@ public interface LocationRepository extends MongoRepository<Location, ObjectId> 
     Optional<Location> findById(ObjectId id);
 
     Optional<Location> findByLoginId(String loginId);
+
+    // 동잃 사용자 중복 주소 체크
+    Optional<Location> findByCountryAndStateAndCityAndLatitudeAndLongitude(
+            String loginId,
+            String country,
+            String state,
+            String city,
+            double latitude,
+            double longitude);
+
 }
