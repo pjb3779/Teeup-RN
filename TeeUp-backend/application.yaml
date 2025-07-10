@@ -2,9 +2,15 @@ spring:
   config:
     import: optional:application-secret.yaml
 
+  http:
+    encoding:
+      charset: UTF-8
+      force: true
+      enabled: true
+
   data:
     mongodb:
-      uri: mongodb://${mongodb.username}:${mongodb.password}@ac-fntwfxt-shard-00-00.bbgx89l.mongodb.net:27017,ac-fntwfxt-shard-00-01.bbgx89l.mongodb.net:27017,ac-fntwfxt-shard-00-02.bbgx89l.mongodb.net:27017/teeup-db?ssl=true&replicaSet=atlas-owjper-shard-0&authSource=admin&retryWrites=true&w=majority
+      uri: mongodb+srv://${mongodb.username}:${mongodb.password}@niceon.gb2emam.mongodb.net/teeup-db?retryWrites=true&w=majority&authSource=admin
 
 server:
   address: 0.0.0.0
@@ -13,3 +19,7 @@ server:
 #프로필 사진 저장
 file:
   upload-dir: uploads/avatars
+
+logging:
+  pattern:
+    console: "%d{yyyy-MM-dd HH:mm:ss} %-5level %logger{36} - %msg%n"
