@@ -11,7 +11,7 @@ import {
 } from 'react-native';
 import { MaterialIcons, FontAwesome, AntDesign } from '@expo/vector-icons';
 import { login } from '../../services/authService';
-import Main from '../main/HomeScreen'; // 로그인 후 메인 화면
+import Main from '../main/Home/HomeScreen'; // 로그인 후 메인 화면
 import useUserStore from '../../store/userStore';
 
 const { width } = Dimensions.get('window');
