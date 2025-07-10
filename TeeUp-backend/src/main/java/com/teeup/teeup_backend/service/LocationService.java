@@ -46,7 +46,7 @@ public class LocationService {
 
             // DB에서 동일한 주소가 이미 존재하는지 조회
             Optional<Location> existing = locationRepository
-                    .findByCountryAndStateAndCityAndLatitudeAndLongitude(
+                    .findByLoginIdAndCountryAndStateAndCityAndLatAndLng(
                             loginId,
                             locationDto.getCountry(),
                             locationDto.getState(),
