@@ -106,14 +106,27 @@ export default function SearchScreen({ navigation }) {
         <View style={styles.avatarPlaceholder} />
       )}
 
-      <TouchableOpacity
-        style={styles.info}
-        onPress={() =>
+    <TouchableOpacity
+      style={styles.info}
+      onPress={async () => {
+        try {
+          const res = await api.get('/api/profile', {
+            headers: { loginId: item.loginId }
+          });
+          const { nickname, avatarUrl } = res.data;
+
+          // ② OtherProfileScreen 으로 이동하면서 nickname, avatarUrl 함께 전달
           navigation.navigate('OtherProfileScreen', {
             loginId: item.loginId,
-          })
+            nickName: nickname,
+            avatarUrl: avatarUrl
+          });
+        } catch (err) {
+          console.error('프로필 조회 실패', err);
+          Alert.alert('오류', '프로필을 불러오는 데 실패했습니다.');
         }
-      >
+      }}
+    >
         <Text style={styles.name}>{item.loginId}</Text>
         <Text style={styles.username}>
           {item.nickname || '닉네임 없음'}
