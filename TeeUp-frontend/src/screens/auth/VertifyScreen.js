@@ -48,7 +48,7 @@ export default function VerifyScreen({ navigation, route }) {
     const pin = code.join('');
       // 검증 로직(4자리 완성 확인) 필요 없으면 주석 제거
       // if (pin.length < 4) return;
-      navigation.navigate('Login');
+      navigation.navigate('Profile');
   };
 
   const handleResend = () => console.log('Resend code');

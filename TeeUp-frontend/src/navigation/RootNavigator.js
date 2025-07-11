@@ -6,6 +6,8 @@ import SignUpScreen from '../screens/auth/SignUpScreen'; // 회원가입 화면
 import VertifyScreen from '../screens/auth/VertifyScreen'; // 회원가입 화면
 import MainTabNavigator from './MainTabNavigator'; // 로그인 후 메인 화면
 import EditProfileScreen from '../screens/main/Profile/EditProfileScreen';
+import ProfileScreen from '../screens/auth/ProfileScreen'; //회원가입중 프로필 화면
+
 const Stack = createNativeStackNavigator();
 
 export default function RootNavigator() {
@@ -27,6 +29,7 @@ export default function RootNavigator() {
         </Stack.Screen>
         <Stack.Screen name="SignUp" component={SignUpScreen} />
         <Stack.Screen name="Vertify" component={VertifyScreen} />
+        <Stack.Screen name="Profile" component={ProfileScreen} />
       </>
     ) : (
       <>
