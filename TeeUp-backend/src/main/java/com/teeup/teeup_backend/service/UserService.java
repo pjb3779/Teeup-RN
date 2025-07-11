@@ -20,6 +20,8 @@ import com.teeup.teeup_backend.dto.UserUpdateProfile;
 import com.teeup.teeup_backend.exception.DuplicateLoginIdException;
 import com.teeup.teeup_backend.model.User;
 import com.teeup.teeup_backend.repository.UserRepository;
+import com.teeup.teeup_backend.exception.UserNotFoundException;
+
 // 사용자 관련 핵심 비즈니스 로직 처리 서비스
 @Service
 public class UserService {
@@ -69,23 +71,25 @@ public class UserService {
     public String getAvatarUrl(String loginId) {
         return userRepository.findByLoginId(loginId)
             .map(User::getAvatarUrl)
-            .orElseThrow(() -> new RuntimeException("사용자를 찾을 수 없습니다."));
+            .orElseThrow(() -> new UserNotFoundException("FUCK."));
     }
+
+    
     // 회원 정보 업데이트 메서드
     public User updateUserProfile(String loginId, UserUpdateProfile dto) {
 
         User user = userRepository.findByLoginId(loginId).orElseThrow(() -> new RuntimeException("사용자를 찾을 수 없습니다."));
-        System.out.println("업데이트 전 user: " + user);
 
         user.setNickname(dto.getNickname());
         user.setGender(dto.getGender());
         user.setAge(dto.getAge());
         user.setGolfLevel(dto.getGolfLevel());
-        user.setAvatarUrl(dto.getAvatarUrl());
 
-        User updateUser = userRepository.save(user);
-        System.out.println("업데이트 후 user: " + updateUser);
-        return updateUser;
+        // avatarUrl은 null이 아닐 때만 덮어쓰기
+        if (dto.getAvatarUrl() != null && !dto.getAvatarUrl().isEmpty()) {
+            user.setAvatarUrl(dto.getAvatarUrl());
+        }
+        return userRepository.save(user);
     }
 
     private final S3Service s3Service;
@@ -99,16 +103,14 @@ public class UserService {
     }
 
     // 회원 아바타 저장 메서드
-    public String storeUserAvatar(String loginId, MultipartFile file) throws IOException {
-        // S3Service의 uploadFileToS3 호출
+    public User storeUserAvatar(String loginId, MultipartFile file) throws IOException {
         String avatarUrl = s3Service.uploadFileToS3(file);
-
         User user = userRepository.findByLoginId(loginId)
-            .orElseThrow(() -> new RuntimeException("사용자를 찾을 수 없습니다."));
+            .orElseThrow(() -> new UserNotFoundException("사용자를 찾을 수 없습니다."));
         user.setAvatarUrl(avatarUrl);
-        userRepository.save(user);
-        return avatarUrl;
+        return userRepository.save(user);   // ▶️ 업데이트된 User 리턴
     }
+
 
     public List<User> getFollowers(String loginId){
         List<String> followerLogins = followService.getFollowerIds(loginId);
