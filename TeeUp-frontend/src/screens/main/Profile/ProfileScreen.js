@@ -106,8 +106,8 @@ export default function Profile() {
   }
 
   // 5) 편집 버튼 핸들러
-  const handleEditProfile = () => {
-    navigation.navigate('EditProfileScreen', { profile });
+  const handleSettingScrenen = () => {
+    navigation.navigate('SettingScreen', { profile });
   };
 
   const handleOpenFollowers = () => {
@@ -126,7 +126,7 @@ export default function Profile() {
     <View style={styles.container}>
       {/* 헤더 */}
       <View style={styles.header}>
-        <TouchableOpacity onPress={handleEditProfile} style={styles.settingButton}>
+        <TouchableOpacity onPress={handleSettingScrenen} style={styles.settingButton}>
           <Icon name="settings" size={24} color="#fff" />
         </TouchableOpacity>
 

@@ -4,6 +4,7 @@ import ProfileScreen from '../screens/main/Profile/ProfileScreen';
 import EditProfileScreen from '../screens/main/Profile/EditProfileScreen';
 import FollowerListScreen from '../screens/main/Profile/FollowerListScreen';
 import FollowingListScreen from '../screens/main/Profile/FollowingListScreen';
+import SettingScreen from '../screens/main/Profile/SettingScreen';
 
 const Stack = createNativeStackNavigator();
 
@@ -14,6 +15,7 @@ export default function ProfileStackNavigator() {
         <Stack.Screen name="EditProfileScreen" component={EditProfileScreen} />
         <Stack.Screen name="FollowerListScreen" component={FollowerListScreen} />
         <Stack.Screen name="FollowingListScreen" component={FollowingListScreen} />
+        <Stack.Screen name="SettingScreen" component={SettingScreen} />
         </Stack.Navigator>
     );
 }
