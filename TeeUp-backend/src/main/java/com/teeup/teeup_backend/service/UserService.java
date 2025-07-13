@@ -20,6 +20,7 @@ import com.teeup.teeup_backend.dto.UserUpdateProfile;
 import com.teeup.teeup_backend.exception.DuplicateLoginIdException;
 import com.teeup.teeup_backend.model.User;
 import com.teeup.teeup_backend.repository.UserRepository;
+
 // 사용자 관련 핵심 비즈니스 로직 처리 서비스
 @Service
 public class UserService {
@@ -48,7 +49,6 @@ public class UserService {
         // SignupRequest의 필드를 User 객체로 복사
         BeanUtils.copyProperties(req, user);
         user.setLoginId(req.getLoginId());
-        user.setNickname(req.getNickname());
         user.setPassword(encodedPassword); // 암호화된 비밀번호 저장
         user.setEmail(req.getEmail());
         user.setCreatedAt(LocalDateTime.now()); // 생성 시간 설정
@@ -68,9 +68,10 @@ public class UserService {
     // 회원 정보 처리 메서드
     public String getAvatarUrl(String loginId) {
         return userRepository.findByLoginId(loginId)
-            .map(User::getAvatarUrl)
-            .orElseThrow(() -> new RuntimeException("사용자를 찾을 수 없습니다."));
+                .map(User::getAvatarUrl)
+                .orElseThrow(() -> new RuntimeException("사용자를 찾을 수 없습니다."));
     }
+
     // 회원 정보 업데이트 메서드
     public User updateUserProfile(String loginId, UserUpdateProfile dto) {
 
@@ -89,10 +90,10 @@ public class UserService {
     }
 
     private final S3Service s3Service;
-    
+
     public UserService(UserRepository userRepository,
-                        S3Service s3Service,
-                        FollowService followService) {
+            S3Service s3Service,
+            FollowService followService) {
         this.userRepository = userRepository;
         this.s3Service = s3Service;
         this.followService = followService;
@@ -104,13 +105,13 @@ public class UserService {
         String avatarUrl = s3Service.uploadFileToS3(file);
 
         User user = userRepository.findByLoginId(loginId)
-            .orElseThrow(() -> new RuntimeException("사용자를 찾을 수 없습니다."));
+                .orElseThrow(() -> new RuntimeException("사용자를 찾을 수 없습니다."));
         user.setAvatarUrl(avatarUrl);
         userRepository.save(user);
         return avatarUrl;
     }
 
-    public List<User> getFollowers(String loginId){
+    public List<User> getFollowers(String loginId) {
         List<String> followerLogins = followService.getFollowerIds(loginId);
         return userRepository.findByLoginIdIn(followerLogins);
     }
@@ -124,8 +125,8 @@ public class UserService {
         List<User> users = userRepository.findAll();
         Collections.shuffle(users);
         return users.stream()
-                    .limit(limit)
-                    .map(CommunityUserResponse::new)
-                    .collect(Collectors.toList());
+                .limit(limit)
+                .map(CommunityUserResponse::new)
+                .collect(Collectors.toList());
     }
 }

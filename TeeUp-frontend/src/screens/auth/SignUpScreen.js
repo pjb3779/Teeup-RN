@@ -5,7 +5,6 @@ import { signup } from '../../services/authService'; // 회원가입 API 호출 
 
 export default function SignUpScreen({ navigation }) {
   const [password, setPassword] = useState('');
-  const [name, setName] = useState('');        // ← 이름 상태
   const [loginId, setLoginId] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [email, setEmail] = useState('');
@@ -18,7 +17,7 @@ export default function SignUpScreen({ navigation }) {
   };
 
   const handleSignup = async () => {
-    if (!loginId || !password) {
+    if (!loginId || !password || !email) {
       Alert.alert('입력 오류', '모든 항목을 입력해주세요.');
       return;
     }
@@ -32,7 +31,7 @@ export default function SignUpScreen({ navigation }) {
       //await signup({ name, email, loginId, password });  // 이메일도 함께 전송
       //Alert.alert('회원가입 성공', '로그인 화면으로 이동합니다.');
       //navigation.navigate('Login');
-      await signup({ /*name, email,*/ loginId, password });
+      await signup({ /*name, email,*/ loginId, password , email,  });
           // 회원가입 성공 시 VerifyScreen 으로 이동, 이메일 파라미터 전달
           navigation.navigate('Vertify', { email });
 
@@ -46,20 +45,6 @@ export default function SignUpScreen({ navigation }) {
     <View style={styles.container}>
       <Text style={styles.title}>Sign Up</Text>
       <Text style={styles.subtitle}>Create an account to get started</Text>
-      <View style={styles.inputGroup}>
-        <Text style={styles.label}>Name</Text>
-        <View style={styles.inputWrapper}>
-          <MaterialIcons name="person" size={20} color="#aaa" />
-          <TextInput
-            style={styles.input}
-            placeholder="Enter your name"
-            placeholderTextColor="#aaa"
-            value={name}
-           onChangeText={setName}
-         />
-        </View>
-      </View>
-
       {/* UserID 입력 */}
       <View style={styles.inputGroup}>
         <Text style={styles.label}>UserID</Text>
