@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useState, useEffect } from 'react';
 import { fetchBuddyRecommendations } from '../services/matchService';
 
 export default function useBuddyRecommendations(loginId) {
@@ -6,19 +6,23 @@ export default function useBuddyRecommendations(loginId) {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const loadRecommendations = async () => {
+    const loadBuddies = async () => {
       try {
-        const data = await fetchBuddyRecommendations(loginId);
-        setBuddies(data);
-      } catch (error) {
-        console.error('버디 추천 실패:', error);
+        const res = await fetchBuddyRecommendations(loginId);
+        setBuddies(res);
+      } catch (e) {
+        console.error(e);
       } finally {
         setLoading(false);
       }
     };
 
-    loadRecommendations();
+    loadBuddies();
   }, [loginId]);
 
-  return { buddies, loading };
+  return {
+    buddies,
+    loading,
+    setBuddies, // ★ 추가!
+  };
 }

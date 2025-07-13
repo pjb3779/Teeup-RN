@@ -13,6 +13,8 @@ const BOX_SIZE = (width - 80) / 8;
 
 export default function VerifyScreen({ navigation, route }) {
   const email = route.params?.email || 'your.email@example.com';
+  const loginId = route.params?.loginId;
+
   const [code, setCode] = useState(['', '', '', '']);
   const inputs = [
     useRef<TextInput>(null),
@@ -48,7 +50,7 @@ export default function VerifyScreen({ navigation, route }) {
     const pin = code.join('');
       // 검증 로직(4자리 완성 확인) 필요 없으면 주석 제거
       // if (pin.length < 4) return;
-      navigation.navigate('Profile');
+      navigation.navigate('Profile', { loginId });
   };
 
   const handleResend = () => console.log('Resend code');

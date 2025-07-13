@@ -1,61 +1,71 @@
-import api from '../api'
-import { API_BASE_URL } from '@env'
+import api from '../api';
+import { API_BASE_URL } from '@env';
 
 /**
- * 로그인한 사용자의 추천 버디 목록을 불러온다.
- * 실패 시 하드코딩된 가짜 데이터 반환.
+ * [추천] 로그인한 사용자의 추천 버디 목록 불러오기
  * @param {string} loginId
  * @returns {Promise<Array>}
  */
 export const fetchBuddyRecommendations = async (loginId) => {
   try {
-    console.log("추천 버디 로그인 아이디 : ", loginId);
+    console.log('추천 버디 로그인 아이디:', loginId);
     const response = await api.get(`${API_BASE_URL}/api/match/recommendations`, {
       params: { loginId },
     });
+    console.log('추천 버디 결과:', response.data);
     return response.data;
   } catch (error) {
-    console.error('추천 버디 불러오기 실패:', error.message);
+    console.error('추천 버디 불러오기 실패:', error.response?.data || error.message);
+    throw new Error(
+      error.response?.data?.message || '추천 버디 불러오기에 실패했습니다.'
+    );
+  }
+};
 
-    // 실패 시 하드코딩된 임시 추천 목록 반환
-    // 준하가 작업할떄 지울것!
-    return [
-      {
-        loginId: 'fake1',
-        nickname: '홍길동',
-        golf_level: '중급자',
-        avatar_url: 'https://via.placeholder.com/100',
-      },
-      {
-        loginId: 'fake2',
-        nickname: '김버디',
-        golf_level: '초급자',
-        avatar_url: 'https://via.placeholder.com/100',
-      },
-      {
-        loginId: 'fake3',
-        nickname: '김준하하',
-        golf_level: '고급자',
-        avatar_url: 'https://via.placeholder.com/100',
-      },
-      {
-        loginId: 'fake4',
-        nickname: '김준준',
-        golf_level: '고급자',
-        avatar_url: 'https://via.placeholder.com/100',
-      },
-      {
-        loginId: 'fake5',
-        nickname: '김하하하',
-        golf_level: '고급자',
-        avatar_url: 'https://via.placeholder.com/100',
-      },
-      {
-        loginId: 'fake6',
-        nickname: '에효효',
-        golf_level: '고급자',
-        avatar_url: 'https://via.placeholder.com/100',
-      },
-    ];
+/**
+ * [일반검색] 닉네임으로 버디 검색
+ * @param {string} nickname
+ * @returns {Promise<Array>}
+ */
+export const searchBuddiesSimple = async (nickname) => {
+  try {
+    console.log('일반검색 요청 nickname:', nickname);
+    const response = await api.get(`${API_BASE_URL}/api/match/search`, {
+      params: { nickname },
+    });
+    console.log('일반검색 결과:', response.data);
+    return response.data;
+  } catch (error) {
+    console.error('일반검색 실패:', error.response?.data || error.message);
+    throw new Error(
+      error.response?.data?.message || '버디 일반검색에 실패했습니다.'
+    );
+  }
+};
+
+/**
+ * [상세검색] 조건 기반 버디 검색
+ * @param {Object} params
+ *    nickname (string)
+ *    gender (string)
+ *    ageMin (number)
+ *    ageMax (number)
+ *    level (string)
+ *    area (string)
+ * @returns {Promise<Array>}
+ */
+export const searchBuddiesDetail = async (params) => {
+  try {
+    console.log('상세검색 요청 params:', params);
+    const response = await api.get(`${API_BASE_URL}/api/match/search`, {
+      params,
+    });
+    console.log('상세검색 결과:', response.data);
+    return response.data;
+  } catch (error) {
+    console.error('상세검색 실패:', error.response?.data || error.message);
+    throw new Error(
+      error.response?.data?.message || '버디 상세검색에 실패했습니다.'
+    );
   }
 };

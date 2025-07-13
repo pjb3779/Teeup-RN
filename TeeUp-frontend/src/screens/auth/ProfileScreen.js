@@ -7,8 +7,11 @@ import {
   StyleSheet,
   ScrollView,
 } from 'react-native';
+import { updateProfile } from '../../services/authService';
 
-export default function ProfileScreen({ navigation }) {
+export default function ProfileScreen({ navigation, route }) {
+  const loginId = route.params?.loginId;
+
   const [username, setUsername] = useState('');
   const [gender, setGender] = useState('');
   const [age, setAge] = useState('');
@@ -16,16 +19,24 @@ export default function ProfileScreen({ navigation }) {
   const [purpose, setPurpose] = useState('');
   const [location, setLocation] = useState('');
 
-  const handleContinue = () => {
-    console.log({
-      username,
+  const handleContinue = async () => {
+    const profileData = {
+      nickname: username,
       gender,
-      age,
-      handicap,
-      purpose,
-      location,
-    });
-    navigation?.navigate?.('SomeNextScreen');
+      age: parseInt(age) || 0,
+      golfLevel: handicap,
+      // purpose,
+      // area: location,
+    };
+
+    try {
+      const result = await updateProfile(profileData, loginId);
+      console.log('프로필 업데이트 완료:', result);
+      navigation.navigate('Login');
+    } catch (e) {
+      console.error('프로필 업데이트 실패:', e.message);
+      alert(e.message);
+    }
   };
 
   return (
@@ -33,7 +44,7 @@ export default function ProfileScreen({ navigation }) {
       <View style={styles.headerContainer}>
         <Text style={styles.title}>Profile</Text>
         <Text style={styles.subtitle}>
-          Setting you profile to get started
+          Setting your profile to get started
         </Text>
       </View>
 
@@ -89,7 +100,6 @@ export default function ProfileScreen({ navigation }) {
   );
 }
 
-// InputField 컴포넌트를 분리하여 재사용
 function InputField({
   label,
   placeholder,

@@ -31,60 +31,65 @@ export default function BuddyList({ buddies, loading }) {
       keyExtractor={(item) => item.loginId}
       showsVerticalScrollIndicator={false}
       contentContainerStyle={styles.listContent}
-      renderItem={({ item }) => (
-        <View style={styles.itemContainer}>
-          {/* 카드 */}
-          <ImageBackground
-            source={{ uri: item.imageUrl || 'https://via.placeholder.com/335x257' }}
-            resizeMode="cover"
-            style={[styles.cardBackground, { width: CARD_WIDTH, height: CARD_HEIGHT }]}
-            imageStyle={styles.imageStyle}
-          >
-            <View style={styles.gradientOverlay} />
+      renderItem={({ item }) => {
+        // 버디리스트 로그
+        //console.log('🔥 buddy item:', item);
 
-            <View style={styles.cardContent}>
-              {/* Chip */}
-              <View style={styles.chip}>
-                <Text style={styles.chipText}>⚡️ Potential Match!</Text>
-              </View>
+        return (
+          <View style={styles.itemContainer}>
+            {/* 카드 */}
+            <ImageBackground
+              source={{ uri: item.imageUrl || 'https://via.placeholder.com/335x257' }}
+              resizeMode="cover"
+              style={[styles.cardBackground, { width: CARD_WIDTH, height: CARD_HEIGHT }]}
+              imageStyle={styles.imageStyle}
+            >
+              <View style={styles.gradientOverlay} />
 
-              {/* 이름, 나이 + 태그 묶음 */}
-              <View style={styles.bottomSection}>
-                <View style={styles.nameRow}>
-                  <Text style={styles.nameText}>
-                    {item.nickname || '이름없음'}, {item.age || '나이도 없어~'}
-                  </Text>
-                  <View style={styles.nameIcon} />
+              <View style={styles.cardContent}>
+                {/* Chip */}
+                <View style={styles.chip}>
+                  <Text style={styles.chipText}>⚡️ Potential Match!</Text>
                 </View>
 
-                <View style={styles.tagRow}>
-                  <View style={styles.tag}>
-                    <Text style={styles.tagText}>
-                      {item.golf_level || '있는게 없노'}
+                {/* 이름, 나이 + 태그 묶음 */}
+                <View style={styles.bottomSection}>
+                  <View style={styles.nameRow}>
+                    <Text style={styles.nameText}>
+                      {item.nickname || '이름없음'}, {item.age || '나이도 없어~'}
                     </Text>
+                    <View style={styles.nameIcon} />
                   </View>
-                  <View style={styles.tag}>
-                    <Text style={styles.tagText}>Outdoor</Text>
-                  </View>
-                  <View style={styles.tag}>
-                    <Text style={styles.tagText}>Anime</Text>
+
+                  <View style={styles.tagRow}>
+                    <View style={styles.tag}>
+                      <Text style={styles.tagText}>
+                        {item.golf_level || '있는게 없노'}
+                      </Text>
+                    </View>
+                    <View style={styles.tag}>
+                      <Text style={styles.tagText}>Outdoor</Text>
+                    </View>
+                    <View style={styles.tag}>
+                      <Text style={styles.tagText}>Anime</Text>
+                    </View>
                   </View>
                 </View>
               </View>
-            </View>
-          </ImageBackground>
+            </ImageBackground>
 
-          {/* 버튼 */}
-          <View style={styles.buttonRow}>
-            <TouchableOpacity style={styles.buttonOutline}>
-              <Text style={styles.buttonOutlineText}>Chat</Text>
-            </TouchableOpacity>
-            <TouchableOpacity style={styles.buttonFill}>
-              <Text style={styles.buttonFillText}>Follow</Text>
-            </TouchableOpacity>
+            {/* 버튼 */}
+            <View style={styles.buttonRow}>
+              <TouchableOpacity style={styles.buttonOutline}>
+                <Text style={styles.buttonOutlineText}>Chat</Text>
+              </TouchableOpacity>
+              <TouchableOpacity style={styles.buttonFill}>
+                <Text style={styles.buttonFillText}>Follow</Text>
+              </TouchableOpacity>
+            </View>
           </View>
-        </View>
-      )}
+        );
+      }}
     />
   );
 }
@@ -153,9 +158,9 @@ const styles = StyleSheet.create({
   },
   tagRow: {
     flexDirection: 'row',
-    gap: 12, // 여기 gap 더 크게!
+    gap: 12,
     flexWrap: 'wrap',
-    marginTop: 6,  
+    marginTop: 6,
   },
   tag: {
     backgroundColor: 'rgba(32, 25, 19, 0.4)',

@@ -38,6 +38,7 @@ export const signup = async ({ loginId, password , email}) => {
     const response = await axios.post(`${API_BASE_URL}/api/auth/signup`, {
       loginId,
       password,
+      email,
     });
     console.log('회원가입 요청 성공');
     return response.data;
@@ -51,5 +52,67 @@ export const signup = async ({ loginId, password , email}) => {
 
     // 그 외 다른 오류 처리
     throw new Error(error.response?.data?.message || '오류가 발생했습니다.');
+  }
+};
+
+// 프로필 업데이트 요청
+export const updateProfile = async (
+  {
+    nickname,
+    gender,
+    age,
+    golfLevel,
+    // purpose,
+    // area,
+  },
+  loginId
+) => {
+  console.log('프로필 업데이트 요청 시도');
+  console.log('프로필 업데이트 BASE_URL:', API_BASE_URL);
+  console.log('프로필 업데이트 URL:', `${API_BASE_URL}/api/profile/edit`);
+  console.log('프로필 업데이트 데이터:', {
+    nickname,
+    gender,
+    age,
+    golfLevel,
+    // purpose,
+    // area,
+  });
+  console.log('실제 loginId header에 넣는 값:', loginId);
+
+  try {
+    const token = await AsyncStorage.getItem('userToken');
+
+    const response = await axios.put(
+      `${API_BASE_URL}/api/profile/edit`,
+      {
+        nickname,
+        gender,
+        age,
+        golfLevel,
+        // purpose,
+        // area,
+      },
+      {
+        headers: {
+          Authorization: token ? `Bearer ${token}` : '',
+          loginId: loginId || '',
+          'Content-Type': 'application/json',
+        },
+      }
+    );
+
+    console.log('프로필 업데이트 요청 성공');
+    return response.data;
+  } catch (error) {
+    console.error(
+      '프로필 업데이트 실패:',
+      error.response?.data || error.message
+    );
+
+    throw new Error(
+      error.response?.data?.message ||
+        '프로필 업데이트 중 오류가 발생했습니다.'
+    );
   }
 };

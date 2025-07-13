@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { View, Text, TextInput, StyleSheet, TouchableOpacity, Alert, Linking } from 'react-native';
 import { MaterialIcons } from '@expo/vector-icons'; // 아이콘 라이브러리
-import { signup } from '../../services/authService'; // 회원가입 API 호출 함수
+import { login, signup } from '../../services/authService'; // 회원가입 API 호출 함수
 
 export default function SignUpScreen({ navigation }) {
   const [password, setPassword] = useState('');
@@ -33,7 +33,7 @@ export default function SignUpScreen({ navigation }) {
       //navigation.navigate('Login');
       await signup({ /*name, email,*/ loginId, password , email,  });
           // 회원가입 성공 시 VerifyScreen 으로 이동, 이메일 파라미터 전달
-          navigation.navigate('Vertify', { email });
+          navigation.navigate('Vertify', { email, loginId });
 
     } catch (error) {
       console.error('회원가입 실패 사인업 스크린', error.message);
