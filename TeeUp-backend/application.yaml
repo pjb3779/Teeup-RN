@@ -10,7 +10,7 @@ spring:
 
   data:
     mongodb:
-      uri: mongodb+srv://${mongodb.username}:${mongodb.password}@niceon.gb2emam.mongodb.net/teeup-db?retryWrites=true&w=majority&authSource=admin
+      uri: mongodb://localhost:27017/teeup-db
 
 server:
   address: 0.0.0.0

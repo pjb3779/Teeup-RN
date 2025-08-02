@@ -8,9 +8,10 @@ import java.util.List;
 public interface PostRepository extends MongoRepository<Post, ObjectId> {
     
     // 특정 사용자의 게시글 목록 조회
-    List<Post> findByAuthorId(ObjectId authorId);
+    List<Post> findByAuthorId(String authorId);
     // 특정 카테고리의 게시글 목록 조회
     List<Post> findByCategory(String category);
     // 특정 위치의 게시글 목록 조회
     List<Post> findByLocation(String location);
+    
 }

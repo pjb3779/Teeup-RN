@@ -122,8 +122,9 @@ public class UserService {
         return userRepository.findByLoginIdIn(followeeLogins);
     }
 
-    public List<CommunityUserResponse> getRandomCommunityUsers(int limit) {
+    public List<CommunityUserResponse> getRandomCommunityUsers(int limit, String loginId) {
         List<User> users = userRepository.findAll();
+        users.removeIf(u -> u.getLoginId().equals(loginId));
         Collections.shuffle(users);
         return users.stream()
                     .limit(limit)

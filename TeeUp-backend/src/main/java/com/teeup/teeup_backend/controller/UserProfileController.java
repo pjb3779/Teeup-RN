@@ -7,6 +7,7 @@ import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
@@ -23,7 +24,8 @@ import com.teeup.teeup_backend.util.JwtUtils;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-
+import org.springframework.http.MediaType;
+import org.springframework.web.bind.annotation.RequestPart;
 @RestController
 @RequestMapping("/api/profile")
 public class UserProfileController {
@@ -65,24 +67,40 @@ public class UserProfileController {
         }
     }
 
-    @PutMapping("/edit")
+    @PutMapping(
+        value    = "/edit",
+        consumes = MediaType.MULTIPART_FORM_DATA_VALUE
+    )
     public ResponseEntity<?> updateProfile(
         @RequestHeader("loginId") String loginId, 
-        @RequestBody @Valid UserUpdateProfile dto
-    ) {
-        try {
-            User updated = userService.updateUserProfile(loginId, dto);
-            UserUpdateProfile updatedProfile = new UserUpdateProfile();
-            updatedProfile.setNickname(updated.getNickname());
-            updatedProfile.setAvatarUrl(updated.getAvatarUrl());
-            updatedProfile.setGender(updated.getGender());
-            updatedProfile.setAge(updated.getAge());
-            updatedProfile.setGolfLevel(updated.getGolfLevel());
-            return ResponseEntity.ok(updatedProfile);
-        } catch (Exception e) {
-            e.printStackTrace();
-            return ResponseEntity.status(401).body("업데이트 실패 ㅜㅜ");
+        @ModelAttribute UserUpdateProfile dto, 
+        @RequestPart(value = "file", required = false) MultipartFile file
+    ) throws IOException {
+    try {
+        User user = userRepository.findByLoginId(loginId)
+                        .orElseThrow(() -> new RuntimeException("사용자 없음"));
+
+        // ③ 아바타 파일이 있으면 저장
+        if (file != null && !file.isEmpty()) {
+            user = userService.storeUserAvatar(loginId, file);
         }
+
+        // ④ 나머지 프로필 정보 업데이트
+        user.setNickname(dto.getNickname());
+        user.setGender(dto.getGender());
+        user.setAge(dto.getAge());
+        user.setGolfLevel(dto.getGolfLevel());
+        user = userRepository.save(user);
+
+        // ⑤ 응답용 DTO에 복사
+        UserUpdateProfile updatedProfile = new UserUpdateProfile();
+        org.springframework.beans.BeanUtils.copyProperties(user, updatedProfile);
+        return ResponseEntity.ok(updatedProfile);
+
+    } catch (Exception e) {
+        e.printStackTrace();
+        return ResponseEntity.status(401).body("업데이트 실패 ㅜㅜ");
+    }
     }
 
     @PostMapping("/avatar")

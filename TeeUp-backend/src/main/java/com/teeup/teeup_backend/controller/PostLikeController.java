@@ -24,6 +24,7 @@ public class PostLikeController {
         @PathVariable String postId,
         @PathVariable String userId
     ){
+
         PostResponse resp = likeService.toggleLike(postId, userId);
 
         Map<String, Object> body = new HashMap<>();
