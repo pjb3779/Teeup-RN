@@ -15,7 +15,7 @@ const sections = [
     title: 'Account',
     data: [
       { icon: 'person-outline',       label: 'Edit profile',      screen: 'EditProfileScreen' },
-      { icon: 'shield-outline',       label: 'Security' },
+      { icon: 'shield',       label: 'Security' },
       { icon: 'notifications-none',   label: 'Notifications' },
       { icon: 'lock-outline',         label: 'Privacy' },
     ],
@@ -38,7 +38,7 @@ const sections = [
   {
     title: 'Actions',
     data: [
-      { icon: 'flag-outline',   label: 'Report a problem' },
+      { icon: 'flag',   label: 'Report a problem' },
       { icon: 'person-add',     label: 'Add account' },
       { icon: 'exit-to-app',    label: 'Log out' },
     ],
