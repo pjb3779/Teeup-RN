@@ -21,4 +21,6 @@ public interface UserRepository extends MongoRepository<User, ObjectId> {
     Optional<User> findByUserId(ObjectId userId);
 
     List<User> findByLoginIdIn(List<String> loginIds);
+
+    boolean existsByLoginId(String loginId);
 }

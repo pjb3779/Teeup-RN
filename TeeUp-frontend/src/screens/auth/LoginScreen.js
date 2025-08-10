@@ -10,37 +10,48 @@ import {
   Dimensions,
 } from 'react-native';
 import { MaterialIcons, FontAwesome, AntDesign } from '@expo/vector-icons';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { login } from '../../services/authService';
-import Main from '../main/Home/HomeScreen'; // 로그인 후 메인 화면
 import useUserStore from '../../store/userStore';
 
 const { width } = Dimensions.get('window');
+const BUTTON_WIDTH = width * 0.85;
 
 export default function LoginScreen({ navigation, onLogin }) {
-  const [userid, setUserid] = useState('');  // email을 userid로 변경
-  const [password, setPassword] = useState('');  // 비밀번호 상태
-  const [showPassword, setShowPassword] = useState(false);  // 비밀번호 보이기 여부 상태
+  const [userid, setUserid] = useState('');       // 로그인 아이디 (email 대신 userid)
+  const [password, setPassword] = useState('');   // 비밀번호
+  const [showPassword, setShowPassword] = useState(false); // 비밀번호 표시 토글
   const setUser = useUserStore((state) => state.setUser);
-  
-  // 로그인 함수
+
   const handleLogin = async () => {
-    console.log('로그인 시도중');
-    if (!userid || !password) {  // 이메일과 비밀번호가 비어있는지 확인
-      Alert.alert('입력 오류', '아이디와 비밀번호를 모두 입력해주세요.');
-      return;
-    }
-
     try {
-      const { token, user } = await login(userid, password);;  // 서버와 로그인 요청
-      console.log('로그인 성공, 토큰:', token);  // 토큰을 console에 출력 (개발 중)
-      setUser(user);
-      //Alert.alert('로그인 성공', 환영합니다! ${user.nickname}); 
+      if (!userid || !password) {
+        Alert.alert('입력 오류', '아이디와 비밀번호를 모두 입력해주세요.');
+        return;
+      }
 
-      onLogin();  // 로그인 성공 시 홈 화면으로 이동
+      console.log('로그인 시도중');
+      const { token, user } = await login(userid, password); // user.loginId 내려오도록 보장
+      console.log('로그인 성공, 토큰:', token);
+
+      // 글로벌 스토어 업데이트
+      setUser(user);
+
+      // ✅ 채팅/인증에 필요한 값 저장
+      await AsyncStorage.multiSet([
+        ['loginId', user?.loginId ?? userid], // 백엔드에서 loginId 주면 그 값, 없으면 입력값 사용
+        ['userToken', token],
+      ]);
+
+      // 필요하면 환영 메시지
+      // Alert.alert('로그인 성공', `환영합니다! ${user?.nickname ?? user?.loginId ?? userid}`);
+
+      // 콜백 있으면 호출, 없으면 기본 네비게이션
+      if (onLogin) onLogin();
+      else navigation.replace('RoomsList'); // 네비 구조에 맞게 수정 가능
     } catch (error) {
+      console.error('로그인 실패:', error);
       Alert.alert('로그인 실패', '아이디 또는 비밀번호가 틀렸습니다.');
-       console.log('로그인 실패');
-      console.error(error);
     }
   };
 
@@ -67,6 +78,8 @@ export default function LoginScreen({ navigation, onLogin }) {
             placeholderTextColor="#aaa"
             value={userid}
             onChangeText={setUserid}
+            autoCapitalize="none"
+            autoCorrect={false}
           />
         </View>
       </View>
@@ -81,8 +94,9 @@ export default function LoginScreen({ navigation, onLogin }) {
           secureTextEntry={!showPassword}
           value={password}
           onChangeText={setPassword}
+          autoCapitalize="none"
         />
-        <TouchableOpacity onPress={() => setshowPassword(!showPassword)}>
+        <TouchableOpacity onPress={() => setShowPassword(!showPassword)}>
           <MaterialIcons
             name={showPassword ? 'visibility' : 'visibility-off'}
             size={20}
@@ -135,14 +149,12 @@ export default function LoginScreen({ navigation, onLogin }) {
   );
 }
 
-const BUTTON_WIDTH = width * 0.85;
-
 const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#fff',
     alignItems: 'center',
-    justifyContent: 'center', 
+    justifyContent: 'center',
     paddingHorizontal: 20,
   },
   logo: {
@@ -155,6 +167,15 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     marginBottom: 32,
     color: '#004225',
+  },
+  inputGroup: {
+    width: BUTTON_WIDTH,
+  },
+  label: {
+    color: '#6B7280',
+    fontSize: 14,
+    marginBottom: 6,
+    marginLeft: 2,
   },
   inputWrapper: {
     flexDirection: 'row',
@@ -228,7 +249,7 @@ const styles = StyleSheet.create({
   },
   socialWrapper: {
     flexDirection: 'row',
-    justifyContent: 'center',    // 가운데 정렬
+    justifyContent: 'center',
     width: BUTTON_WIDTH,
   },
   socialBtn: {

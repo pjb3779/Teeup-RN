@@ -1,220 +1,159 @@
+// src/screens/main/Chat/ChatScreen.js
 import React, { useEffect, useRef, useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, FlatList, StyleSheet, Alert } from 'react-native';
+import {
+  View, TextInput, Button, FlatList, Text, KeyboardAvoidingView, Platform, Alert
+} from 'react-native';
+import { Client } from '@stomp/stompjs';
+import { getLoginId, API_BASE_DEFAULT, WS_URL_DEFAULT } from '../../../utils/session';
 
 export default function ChatScreen({ route, navigation }) {
-  const { loginId, receiverId, roomId: routeRoomId } = route.params;
+  const roomId = route?.params?.roomId || null;
 
-  const [roomId, setRoomId] = useState(null);
+  const [loginId, setLoginId] = useState(null);
+  const [apiBase] = useState(API_BASE_DEFAULT);
+  const [wsUrl]   = useState(WS_URL_DEFAULT);
+
+  const clientRef = useRef(null);
+  const [connected, setConnected] = useState(false);
   const [messages, setMessages] = useState([]);
-  const [inputText, setInputText] = useState('');
-  const ws = useRef(null);
+  const [text, setText] = useState('');
 
+  // 진입 파라미터 확인
   useEffect(() => {
-    if (routeRoomId) {
-      console.log('[Chat] ✅ roomId 전달받음:', routeRoomId);
-      setRoomId(routeRoomId);
-      connectWebSocket(routeRoomId);
-    } else {
-      /**
-       * Step 1. 채팅방 생성 or 조회
-       */
-      const createOrGetRoom = async () => {
-        try {
-          console.log('[Chat] 🔗 방 생성 or 조회 중...');
+    console.log('Chat route.params =', route?.params);
+  }, [route?.params]);
 
-          const res = await fetch('http://10.193.58.82:8080/api/chatrooms', {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-              loginId1: loginId,
-              loginId2: receiverId,
-            }),
-          });
+  // 로그인 아이디 로드
+  useEffect(() => {
+    (async () => {
+      if (!roomId) return;
+      const id = await getLoginId();
+      if (!id) {
+        Alert.alert('로그인 필요', '다시 로그인 해주세요.');
+        return;
+      }
+      setLoginId(id);
+    })();
+  }, [roomId]);
 
-          if (!res.ok) {
-            throw new Error(`Failed to create/get chat room. Status: ${res.status}`);
-          }
+  // 히스토리 로드
+  useEffect(() => {
+    (async () => {
+      if (!roomId) return;
+      try {
+        const res = await fetch(`${apiBase}/api/chat/rooms/${roomId}/history?page=0&size=30`);
+        const page = await res.json();
+        setMessages((page.content || []).slice().reverse());
+      } catch (e) {
+        console.warn('history error', e);
+      }
+    })();
+  }, [apiBase, roomId]);
 
-          const data = await res.json();
-          console.log('[Chat] ✅ 채팅방 생성/조회 완료:', data);
+  // STOMP 연결
+  useEffect(() => {
+    if (!roomId || !loginId) return;
 
-          const newRoomId =
-            typeof data.id === 'object' && data.id?.toString
-              ? data.id.toString()
-              : String(data.id);
-
-          setRoomId(newRoomId);
-          connectWebSocket(newRoomId);
-        } catch (error) {
-          console.error('[Chat] ❌ 방 생성/조회 실패:', error);
-          Alert.alert('Error', '채팅방 생성에 실패했습니다.');
-        }
+    const client = new Client({
+      webSocketFactory: () => {
+        const ws = new WebSocket(wsUrl, ['v12.stomp', 'v11.stomp', 'v10.stomp']); // ★ 배열
+        ws.onopen = () => {
+         // 협상된 프로토콜 실제로 뭐로 잡혔는지 확인
+        console.log('WS NEGOTIATED PROTOCOL =', ws.protocol);
       };
+      return ws;
+    },
+      connectHeaders: { loginId: (loginId || '').trim() }, // Principal로 사용
+      reconnectDelay: 3000,
+      heartbeatIncoming: 10000,
+      heartbeatOutgoing: 10000,
+      debug: (str) => console.log('[STOMP]', str),
+      onWebSocketClose: (evt) => console.log('WS closed', evt?.code, evt?.reason),
+      forceBinaryWSFrames: true,
+      appendMissingNULLonIncoming: true,
+    });
 
-      createOrGetRoom();
-    }
+    client.onConnect = (frame) => {
+      console.log('STOMP connected, session:', frame?.headers?.['session']);
+      setConnected(true);
+      client.subscribe(`/topic/rooms/${roomId}`, (msgFrame) => {
+        console.log('sub msg:', msgFrame.body);
+        const msg = JSON.parse(msgFrame.body);
+        setMessages(prev => [...prev, msg]);
+      });
+    };
+
+    client.onStompError = (frame) => {
+      console.warn('STOMP ERROR hdr:', frame.headers);
+      console.warn('STOMP ERROR body:', frame.body);
+    };
+
+    client.onWebSocketError = (e) => {
+      console.warn('WS ERROR', e?.message || e);
+    };
+
+    client.onDisconnect = () => {
+      console.log('STOMP disconnected');
+    };
+
+    client.activate();
+    clientRef.current = client;
 
     return () => {
-      console.log('[WebSocket] Cleaning up connection...');
-      if (ws.current) {
-        ws.current.close();
-      }
+      client.deactivate();
+      setConnected(false);
     };
-  }, []);
+  }, [wsUrl, loginId, roomId]);
 
-
-  /**
-   * WebSocket 연결 함수
-   */
-  const connectWebSocket = (roomId) => {
-    console.log(`[WebSocket] Connecting to ws://10.193.58.82:8080/ws/chat?loginId=${loginId}&roomId=${roomId}`);
-    
-    ws.current = new WebSocket(
-      `ws://10.193.58.82:8080/ws/chat?loginId=${loginId}&roomId=${roomId}`
-    );
-
-    ws.current.onopen = () => {
-      console.log('[WebSocket] ✅ Connected!');
-    };
-
-    ws.current.onmessage = (event) => {
-      console.log('[WebSocket] 📥 Message received:', event.data);
-
-      try {
-        const data = JSON.parse(event.data);
-        setMessages((prev) => [...prev, data]);
-      } catch (error) {
-        console.error('[WebSocket] ❌ JSON parse error:', error, event.data);
-      }
-    };
-
-    ws.current.onerror = (e) => {
-      console.error('[WebSocket] ❌ Error occurred:', e.message);
-      Alert.alert('WebSocket Error', e.message);
-    };
-
-    ws.current.onclose = (e) => {
-      console.log(`[WebSocket] 🚪 Connection closed. Code: ${e.code}, Reason: ${e.reason}`);
-    };
-  };
-
-  /**
-   * 메시지 전송
-   */
+  // 전송
   const sendMessage = () => {
-    if (inputText.trim() === '') return;
-
-    const messageDto = {
-      roomId: roomId,        // ✅ 이제 roomId는 무조건 string
-      senderId: loginId,
-      receiverId: receiverId,
-      content: inputText,
-      type: 'TEXT'
-    };
-
-    try {
-      ws.current.send(JSON.stringify(messageDto));
-      console.log('[WebSocket] 📤 Message sent:', messageDto);
-
-      setMessages(prev => [...prev, { ...messageDto, isLocal: true }]);
-      setInputText('');
-    } catch (e) {
-      console.error('[WebSocket] ❌ Failed to send message:', e);
-      Alert.alert('WebSocket Error', '메시지를 보낼 수 없습니다.');
-    }
+    const content = text.trim();
+    if (!connected || !content) return;
+    console.log('publish ->', { roomId, loginId, content });
+    clientRef.current?.publish({
+      destination: `/app/rooms/${roomId}/send`,
+      body: JSON.stringify({ type: 'TEXT', content }),
+      headers: { 'content-type': 'application/json' }, // 중요
+    });
+    setText('');
   };
 
-
-
-  const renderItem = ({ item }) => (
-    <View
-      style={[
-        styles.messageBubble,
-        item.senderId === loginId ? styles.myMessage : styles.otherMessage
-      ]}
-    >
-      <Text style={styles.sender}>
-        {item.senderId === loginId ? '나' : item.senderId}
-      </Text>
-      <Text style={styles.messageText}>{item.content}</Text>
-    </View>
-  );
+  if (!roomId) {
+    return <View style={{flex:1,alignItems:'center',justifyContent:'center'}}><Text>roomId 없음</Text></View>;
+  }
+  if (!loginId) {
+    return <View style={{flex:1,alignItems:'center',justifyContent:'center'}}><Text>로그인 확인 중...</Text></View>;
+  }
 
   return (
-    <View style={styles.container}>
+    <KeyboardAvoidingView style={{ flex:1 }} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
       <FlatList
+        style={{ flex:1, padding:12 }}
         data={messages}
-        keyExtractor={(item, index) => index.toString()}
-        renderItem={renderItem}
-        contentContainerStyle={styles.messageList}
+        keyExtractor={(item) => item.id}
+        renderItem={({ item }) => {
+          const mine = item.senderLoginId === loginId;
+          return (
+            <View style={{
+              alignSelf: mine ? 'flex-end' : 'flex-start',
+              backgroundColor: mine ? '#DCF8C6' : '#fff',
+              padding:10, borderRadius:10, marginVertical:4, maxWidth:'80%', elevation:1
+            }}>
+              <Text style={{ fontSize:15 }}>{item.content}</Text>
+              <Text style={{ fontSize:10, color:'#666', marginTop:4 }}>{mine ? '나' : item.senderLoginId}</Text>
+            </View>
+          );
+        }}
       />
-
-      <View style={styles.inputContainer}>
+      <View style={{ flexDirection:'row', gap:8, padding:12, borderTopWidth:1, borderColor:'#eee' }}>
         <TextInput
-          style={styles.input}
-          value={inputText}
-          onChangeText={setInputText}
-          placeholder="메시지를 입력하세요"
+          value={text}
+          onChangeText={setText}
+          placeholder="메시지를 입력..."
+          style={{ flex:1, borderWidth:1, borderColor:'#ccc', borderRadius:20, paddingHorizontal:14, height:44 }}
         />
-        <TouchableOpacity onPress={sendMessage} style={styles.sendButton}>
-          <Text style={styles.sendButtonText}>전송</Text>
-        </TouchableOpacity>
+        <Button title="보내기" onPress={sendMessage} />
       </View>
-    </View>
+    </KeyboardAvoidingView>
   );
 }
-
-const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#fff' },
-  messageList: {
-    padding: 10,
-  },
-  messageBubble: {
-    marginVertical: 5,
-    padding: 10,
-    borderRadius: 8,
-    maxWidth: '70%',
-  },
-  myMessage: {
-    backgroundColor: '#DCF8C6',
-    alignSelf: 'flex-end',
-  },
-  otherMessage: {
-    backgroundColor: '#EEE',
-    alignSelf: 'flex-start',
-  },
-  sender: {
-    fontSize: 12,
-    color: '#555',
-    marginBottom: 2,
-  },
-  messageText: {
-    fontSize: 16,
-  },
-  inputContainer: {
-    flexDirection: 'row',
-    borderTopWidth: 1,
-    borderColor: '#ddd',
-    padding: 5,
-  },
-  input: {
-    flex: 1,
-    fontSize: 16,
-    backgroundColor: '#f9f9f9',
-    padding: 10,
-    borderRadius: 8,
-  },
-  sendButton: {
-    marginLeft: 8,
-    backgroundColor: '#4CAF50',
-    justifyContent: 'center',
-    borderRadius: 8,
-    paddingHorizontal: 15,
-  },
-  sendButtonText: {
-    color: '#fff',
-    fontWeight: 'bold',
-  },
-});
