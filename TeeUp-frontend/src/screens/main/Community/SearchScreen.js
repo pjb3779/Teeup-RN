@@ -22,25 +22,19 @@ export default function SearchScreen({ navigation }) {
     const loadMyLoginId = async () => {
       try {
         const stored = await AsyncStorage.getItem('loginId');
-        if (stored) {
-          setMyLoginId(stored);
-          console.log('✅ 내 로그인ID:', stored);
-        } else {
+        if (!stored) {
           console.log('⚠️ AsyncStorage에 loginId가 없음');
+          setLoading(false);
+          return;
         }
-      } catch (e) {
-        console.error('loginId 불러오기 실패', e);
-      } finally {
-        setLoading(false);
-      }
-    };
 
-    loadMyLoginId();
+        setMyLoginId(stored);
+        console.log('✅ 내 로그인ID:', stored);
 
-    (async () => {
-      try {
+        // 이제 stored(myLoginId)가 준비되었으니 호출
         const res = await api.get('/api/community/recommendations', {
           params: { limit: 10 },
+          headers: { loginId: stored },   // ✏️ loginId → stored
         });
         const data = res.data.map((u) => ({
           ...u,
@@ -49,9 +43,14 @@ export default function SearchScreen({ navigation }) {
         setRecommendations(data);
       } catch (e) {
         console.error('추천 로드 실패', e);
+      } finally {
+        setLoading(false);
       }
-    })();
-  }, []);
+    };
+
+    loadMyLoginId();
+  }, []);  // 빈 deps: 마운트 때 한 번만
+
 
   // 팔로우 ↔ 언팔로우 토글 함수
   const handleToggleFollow = async (followeeLoginId, currentFollowing) => {

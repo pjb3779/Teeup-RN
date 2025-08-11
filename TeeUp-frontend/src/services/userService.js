@@ -1,6 +1,5 @@
 import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-
 import { API_BASE_URL } from '@env'; 
 
 export const getUserProfile = async () => {
@@ -33,28 +32,33 @@ export const getUserProfile = async () => {
     }
 };
 
-export const updateUserProfile = async (profileData) => {
+export const updateUserProfile = async ({ nickname, gender, age, golfLevel, image }) => {
     
     const loginId  = await AsyncStorage.getItem('loginId');
 
-    try{
-        const response = await axios.put(`${API_BASE_URL}/api/profile/edit`, profileData, {
-            headers: { loginId },
+    const formData = new FormData();
+    formData.append('nickname', nickname);
+    formData.append('gender', gender);
+    formData.append('age', String(age));
+    formData.append('golfLevel', golfLevel);
+
+    if (image) {
+        formData.append('file', {
+        uri: image.uri,
+        name: image.fileName ?? 'avatar.jpg',
+        type: image.type ?? 'image/jpeg',
         });
-        return response.data;
-    }
-    catch (error) {
-        if (error.response) {
-        const msg =
-            typeof error.response.data === 'string'
-            ? error.response.data
-            : error.response.data.message || '프로필 수정 실패';
-        throw new Error(msg);
-        } else if (error.request) {
-        throw new Error('서버 응답이 없습니다. 네트워크를 확인해주세요.');
-        } else {
-        throw new Error(error.message);
-        }
     }
 
+    const response = await axios.put(
+        `${API_BASE_URL}/api/profile/edit`,
+        formData,
+        {
+            headers: {
+                loginId,
+                'Content-Type' : 'multipart/form-data',
+            },
+        }
+    );
+    return response.data;
 }
