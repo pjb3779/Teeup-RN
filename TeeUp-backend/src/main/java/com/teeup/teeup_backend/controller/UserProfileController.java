@@ -1,5 +1,6 @@
 package com.teeup.teeup_backend.controller;
 
+import java.io.IOException;
 import java.util.Optional;
 import jakarta.validation.Valid;
 
@@ -85,22 +86,24 @@ public class UserProfileController {
     }
 
     @PostMapping("/avatar")
-    public ResponseEntity<?> uploadAvatar(
-        @RequestHeader("loginId") String loginId, 
+    public ResponseEntity<UserUpdateProfile> uploadAvatar(
+        @RequestHeader("loginId") String loginId,
         @RequestParam("file") MultipartFile file
-    ) {
-        System.out.println("\n\n\n\nAvatar upload requested for loginId: " + loginId);
+    ) throws IOException {
+        System.out.println("Avatar upload requested for loginId: " + loginId);
 
-        try {
-            String avatarUrl = userService.storeUserAvatar(loginId, file);
-            UserUpdateProfile updatedProfile = new UserUpdateProfile();
-            updatedProfile.setAvatarUrl(avatarUrl);
-            return ResponseEntity.ok(updatedProfile);
-        } catch (Exception e) {
-            e.printStackTrace();
-            return ResponseEntity.status(500).body("아바타 업로드 실패");
-        }
+        // 1) 수정된 서비스 호출해서 User 엔티티 받기
+        User updated = userService.storeUserAvatar(loginId, file);
+
+        // 2) User → UserUpdateProfile DTO 복사
+        UserUpdateProfile dto = new UserUpdateProfile();
+        org.springframework.beans.BeanUtils.copyProperties(updated, dto);
+        //    ↑ nickname, avatarUrl, gender, age, golfLevel 모두 복사
+
+        // 3) 응답
+        return ResponseEntity.ok(dto);
     }
+
 
     @GetMapping("/avatar/get")
     public ResponseEntity<AvatarResponse> fetchAvatar(

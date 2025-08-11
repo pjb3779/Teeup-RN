@@ -49,6 +49,7 @@ public class UserService {
         // SignupRequest의 필드를 User 객체로 복사
         BeanUtils.copyProperties(req, user);
         user.setLoginId(req.getLoginId());
+        user.setNickname(req.getNickname());
         user.setPassword(encodedPassword); // 암호화된 비밀번호 저장
         user.setEmail(req.getEmail());
         user.setCreatedAt(LocalDateTime.now()); // 생성 시간 설정
@@ -76,17 +77,17 @@ public class UserService {
     public User updateUserProfile(String loginId, UserUpdateProfile dto) {
 
         User user = userRepository.findByLoginId(loginId).orElseThrow(() -> new RuntimeException("사용자를 찾을 수 없습니다."));
-        System.out.println("업데이트 전 user: " + user);
 
         user.setNickname(dto.getNickname());
         user.setGender(dto.getGender());
         user.setAge(dto.getAge());
         user.setGolfLevel(dto.getGolfLevel());
-        user.setAvatarUrl(dto.getAvatarUrl());
 
-        User updateUser = userRepository.save(user);
-        System.out.println("업데이트 후 user: " + updateUser);
-        return updateUser;
+        // avatarUrl은 null이 아닐 때만 덮어쓰기
+        if (dto.getAvatarUrl() != null && !dto.getAvatarUrl().isEmpty()) {
+            user.setAvatarUrl(dto.getAvatarUrl());
+        }
+        return userRepository.save(user);
     }
 
     private final S3Service s3Service;
@@ -100,15 +101,12 @@ public class UserService {
     }
 
     // 회원 아바타 저장 메서드
-    public String storeUserAvatar(String loginId, MultipartFile file) throws IOException {
-        // S3Service의 uploadFileToS3 호출
+    public User storeUserAvatar(String loginId, MultipartFile file) throws IOException {
         String avatarUrl = s3Service.uploadFileToS3(file);
-
         User user = userRepository.findByLoginId(loginId)
                 .orElseThrow(() -> new RuntimeException("사용자를 찾을 수 없습니다."));
         user.setAvatarUrl(avatarUrl);
-        userRepository.save(user);
-        return avatarUrl;
+        return userRepository.save(user); // ▶️ 업데이트된 User 리턴
     }
 
     public List<User> getFollowers(String loginId) {
