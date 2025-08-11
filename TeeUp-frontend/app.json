@@ -25,6 +25,7 @@
         "backgroundColor": "#ffffff"
       },
       "edgeToEdgeEnabled": true,
+      "softwareKeyboardLayoutMode": "resize",
       "package": "com.beomi_01.golfapp"
     },
     "web": {
@@ -34,6 +35,9 @@
       "eas": {
         "projectId": "348a12aa-3b97-4765-8325-8af2c6aed771"
       }
-    }
+    },
+    "plugins": [
+      "expo-font"
+    ]
   }
 }

@@ -18,6 +18,7 @@ export default function MainTabNavigator() {
         tabBarStyle: { height: 100 },
         tabBarActiveTintColor: '#1D7C3E',
         tabBarInactiveTintColor: '#888',
+        tabBarHideOnKeyboard: true,
         tabBarItemStyle: {
           flexDirection: 'column',
           alignItems: 'center',
